@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N1 语法真题汇总 - Part 4 (151-200)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f2; --bg2: #f0ede5; --surface: #fff; --ink: #1c1008;
+  --muted: #7a6a52; --border: rgba(28,16,8,.1); --gold: #b8860b;
+  --red: #c0392b; --green: #2e7d32; --blue: #1565c0; --star-bg: #fff9e1; 
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; }
+
+.topbar {
+  background: var(--ink); color: #f5f1eb; padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.topbar h1 { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; letter-spacing: .05em; }
+
+.subbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: .6rem 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.tool-btn { background: var(--ink); color: #f5f1eb; border: none; padding: .4rem 1rem; border-radius: 4px; font-size: .75rem; cursor: pointer; transition: 0.2s; }
+.tool-btn:hover { opacity: 0.8; }
+
+.table-wrap { overflow-x: auto; padding-bottom: 80px; }
+table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+thead th { background: #e8e4da; color: var(--muted); font-size: .7rem; padding: .7rem 1.5rem; text-align: left; border-bottom: 2px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: 0.15s; }
+tbody tr:hover { background: rgba(184,134,11,.03); }
+
+td { padding: 1rem 1.5rem; vertical-align: top; line-height: 1.6; }
+.id-cell { width: 70px; text-align: center; color: #999; font-size: 13px; font-weight: bold; border-right: 1px solid var(--border); }
+.word-cell { width: auto; white-space: nowrap; } 
+.answer-cell { width: 350px; border-left: 1px dashed var(--border); background: rgba(0,0,0,0.01); }
+
+.word-jp { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; font-weight: 500; display: inline-block; vertical-align: middle; }
+.grammar-highlight { color: var(--red); font-weight: 700; }
+
+.example-zh { 
+  display: none; 
+  font-size: 0.9rem; 
+  color: var(--muted); 
+  padding: 6px 12px; 
+  background: #eeeae0; 
+  border-radius: 4px; 
+  margin-top: 8px;
+  white-space: normal; 
+  width: fit-content;
+}
+.example-zh.visible { display: block; }
+
+.reveal-btn { background: #fff; border: 1.5px solid var(--border); color: var(--muted); padding: .3rem .8rem; border-radius: 4px; font-size: .7rem; cursor: pointer; margin-bottom: 10px; }
+.reveal-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.answer-box { display: none; }
+.answer-box.visible { display: block; }
+.usage-tag { font-size: .72rem; background: #e0ddd5; color: #555; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
+.grammar-rule { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.grammar-mean { font-size: .82rem; color: var(--green); font-weight: bold; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; display: inline-block; }
+
+.pagination { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--ink); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
+.btn-page { background: var(--gold); border: none; color: white; padding: 8px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-page:disabled { background: #555; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>N1 语法真题演练 <span style="font-size: 0.8rem; opacity: 0.7;">Part 4 (151-200)</span></h1>
+</div>
+
+<div class="subbar">
+  <button class="tool-btn" id="revealAllBtn">全部显示</button>
+  <button class="tool-btn" style="background:#666" id="hideAllBtn">全部隐藏</button>
+  <div style="font-size: 0.75rem; color: var(--muted);">提示：例句保持单行。点击“显示答案”查看译文及右侧解析。</div>
+</div>
+
+<div class="table-wrap">
+  <table id="vocabTable">
+    <thead>
+      <tr>
+        <th style="width: 70px; text-align: center;">ID</th>
+        <th>日语真题例句 (例文)</th>
+        <th>解析与用法 (右侧)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  <button id="prevBtn" class="btn-page" onclick="changePage(-1)">PREV</button>
+  <span id="pageInfo" style="color:white; font-weight:bold;">1 / 3</span>
+  <button id="nextBtn" class="btn-page" onclick="changePage(1)">NEXT</button>
+</div>
+
+<script>
+const DATA = [
+  ["151", "一日では見きれない<span class='grammar-highlight'>ほど</span>の作品が展示されていた。(24-12)", "V普/A普/Naな+ほど", "达到...的程度", "展出的作品多到一天都看不完。 [cite: 642-643]"],
+  ["152", "自慢する<span class='grammar-highlight'>ほどのことではない</span>が、入社以来10年一度も遅刻をしたことがない (10-12)", "ほどの+こと+ではない", "没到...的那种程度", "虽然也不是什么值得夸耀的事，但我入职10年来一次迟到都没有过。 [cite: 644-647]"],
+  ["153", "資格を取っただけで希望の職につける<span class='grammar-highlight'>ほど世間は甘くない</span>らしい。(16-12)", "Aは Bほど ～ない", "没有B那么...", "社会似乎并没有“只要拿到资格证就能从事理想职业”那么简单。 [cite: 648-654]"],
+  ["154.1", "徹夜<span class='grammar-highlight'>してまで</span>、仕事をこなす。", "vて形 まで", "甚至不惜... / 竟然到...的地步", "竟然不惜通宵来完成工作。 [cite: 660-661]"],
+  ["154.2", "子供の遊ぶ時間を<span class='grammar-highlight'>奪ってまで</span>無理にやらせる必要はないと思う (20-12)", "vて形 まで", "甚至不惜...", "我认为没必要甚至剥夺孩子的玩耍时间来强迫他们学习。 [cite: 662-664]"],
+  ["154.3", "家庭を<span class='grammar-highlight'>犠牲にしてまで</span>となるとそれはちょっと問題です。(11-7)", "vて形 まで", "甚至不惜...", "如果到了甚至要牺牲家庭的地步，那就有点问题了。 [cite: 665-666]"],
+  ["155", "支店長を任される<span class='grammar-highlight'>までになった</span>が、和菓子職人を目指し、45歳で退職した。(18-12)", "vる までになる", "终于达到了...的程度 (积极)", "虽然已经拼搏到了被委任为分店长的地步，但他为了追求成为和菓子职人的梦想，在45岁时辞职了。 [cite: 667-668]"],
+  ["156", "解决には至らない<span class='grammar-highlight'>までも</span>気持ちが楽になるだろう。(17-12)", "vないまでも", "即便达不到...程度，也...", "虽然可能还无法解决问题，但说出来心里会轻松一些吧。 [cite: 669-671]"],
+  ["157", "そんな簡単なこと、わざわざあなたに、説明してもらう<span class='grammar-highlight'>までもない</span> (21-7)", "vる までもない", "没必要...", "那么简单的事，完全没必要特意请你来解释。 [cite: 672-674]"],
+  ["158", "景気が回復してきていると実感できる<span class='grammar-highlight'>までに至らない</span>企業もまだ多い。(18-12)", "vる までに至らない", "还没达到...的地步", "虽然政府在推行经济复苏政策，但仍有很多企业还没达到能切身感受到经济正在好转的地步。 [cite: 675-677]"],
+  ["159.1", "友人に<span class='grammar-highlight'>誘われるまま</span>、テニス部に入った。(22-12)", "被动态 + まま", "任凭 / 随...", "高中入学时因为没有特别想参加的社团，就随朋友的邀请加入了网球部。 [cite: 678-679]"],
+  ["159.2", "店員に<span class='grammar-highlight'>勧められるまま</span>大きいテーブルを買ってしまった。(10-7)", "被动态 + まま", "任凭 / 听凭...", "没考虑房间大小，听凭店员的推荐就买了一张大桌子。 [cite: 680-682]"],
+  ["160", "真夏に戻ったかのような日も<span class='grammar-highlight'>あれば</span>ひんやりとした日も<span class='grammar-highlight'>あり</span>、体調を崩しやすい。(22-12)", "も...ば...も", "既有...又有...", "初秋这个时节，既有仿佛回到盛夏的日子，也有凉飕飕的日子，气温差异很大，容易生病。 [cite: 683-685]"],
+  ["161.1", "<span class='grammar-highlight'>父が父なら、子も子だ</span>。", "N1 が N1 なら N2 も N2 だ", "上梁不正下梁歪 / 双方都不像样", "父亲不像样，孩子也跟着不像样。 [cite: 687-688]"],
+  ["161.2", "もちろん悪いのは彼だけど、それくらいのことで怒った<span class='grammar-highlight'>君も君だよ</span> (12-12)", "N も N だ", "你也有不对的地方", "当然错在开玩笑的他，但为了这点小事就发火的你也有不对的地方。 [cite: 689-690]"],
+  ["162.1", "このプロジェクトが成功する<span class='grammar-highlight'>もしないも</span>、リーダーの君にかかっている。", "动るも～ないも", "成败都...", "课长对我说：“这个项目成不成功，全看你这个组长的了”，让我干劲十足。 [cite: 691-693]"],
+  ["162.2", "存在が知られないことには<span class='grammar-highlight'>売れるも売れないもない</span>。", "动るも～ないも", "卖不卖得动都谈不上", "只要不被知晓，就根本谈不上卖得动卖不动。 [cite: 694]"],
+  ["163", "3歳前後の子供は、何でも知りたがる<span class='grammar-highlight'>ものです</span>。(24-7)", "连体形+ものです", "本质 / 应当如此", "3岁左右的孩子通常对什么都充满好奇。大人不该嫌麻烦，而应认真面对这些提问。 [cite: 696-699]"],
+  ["164", "5倍？ありえないよ。どう考えてもさすがに<span class='grammar-highlight'>無理ってもんだ</span>。(20-12)", "～というものだ", "这就是所谓... / 实在是...", "5倍？不可能的。不管怎么想，那实在是太离谱了。 [cite: 700-703]"],
+  ["165", "単に時間をかけてがんばればいい<span class='grammar-highlight'>というものではない</span>と私は思う。(16-12)", "というものではない", "并不是...就好", "我认为工作重要的是在规定时间内如何取得成果，并不是只要花时间拼命干就好。 [cite: 704-706]"],
+  ["166", "皆さんにはぜひこれからも続けていって<span class='grammar-highlight'>ほしいものです</span> (12-7)", "てほしいものです", "非常希望...", "这个祭典有着悠久的传统，非常希望大家今后也能坚持办下去。 [cite: 707-709]"],
+  ["167", "社会人になって<span class='grammar-highlight'>からというもの</span>、運動する機会がすっかり減ってしまった。(22-12)", "てからというもの", "自从...之后 (发生巨大变化)", "自从步入社会后，运动的机会就彻底减少了。 [cite: 710-713]"],
+  ["168", "もう二度と恋こそ<span class='grammar-highlight'>するものか</span>と固く心に誓ったはずだったが。(10-7)", "动る+ものか (もんか)", "决不... / 哪能...", "本该在心里暗暗发誓绝不再谈恋爱了，却不知不觉地喜欢上了她。 [cite: 714-716]"],
+  ["169", "皿が安っぽい。もう少し良いものを<span class='grammar-highlight'>使えないものか</span>と思う。(19-7)", "动+ないものか", "难道就不能...吗？ (愿望)", "这家餐厅料理虽然好吃，但餐具太掉价了。我在想难道就不能换点好点的餐具吗。 [cite: 717-719]"],
+  ["170", "歌っている子供たちの表情は、<span class='grammar-highlight'>真剣そのものだ</span> (23-7)", "名+そのものだ", "简直就是...", "合唱比赛中唱歌的孩子们，表情简直太认真了。 [cite: 720-721]"],
+  ["171.1", "文句の<span class='grammar-highlight'>つけようがない</span> (14-7)", "Vます形+ようがない", "无从... / 没办法...", "简直无懈可击，没什么好抱怨的。 [cite: 722-723]"],
+  ["171.2", "能力は疑い<span class='grammar-highlight'>ようがない</span>ものの、首相になるにはまだ早い (12-12)", "Vます形+ようがない", "无可... / 没法...", "虽然他的政治能力毋庸置疑，但当首相还太早了。 [cite: 724]"],
+  ["171.3", "会社の成長など<span class='grammar-highlight'>望みようもない</span> (14-12)", "Vます形+ようがない", "无法...", "社长说：“持续开发有魅力的新产品至关重要，如果没有那个，公司的成长也就无从谈起。” [cite: 725-726]"],
+  ["171.4", "まさに奇跡としか<span class='grammar-highlight'>言いようがない</span>と絶賛している。", "Vます形+ようがない", "没法说 / 只能说是...", "评委们盛赞道：“竟然能把这样的瞬间收进镜头，简直只能说是奇迹。” [cite: 727-728]"],
+  ["172", "昔から「毒も<span class='grammar-highlight'>使いようによっては</span>薬になる」と言われている。(12-7)", "使いようによっては", "根据用法不同...", "自古就有“毒药根据用法的不同也能变成良药”的说法。 [cite: 729-730]"],
+  ["173", "今日から12月だ。今年ももうすぐ<span class='grammar-highlight'>終わろうとしている</span>。(23-12)", "无意志动词ようとしている", "眼看就要... / 就要...", "从今天起就是12月了。今年眼看也就要过完了。 [cite: 731-732]"],
+  ["174.1", "市民の心をつかもうと<span class='grammar-highlight'>したものの</span>、支持が得られず落選した。(16-7)", "ようとする", "想要... / 试图...", "川西先生在市长选举中试图通过充实福利教育来争取民心，但未获支持，以落选告终。 [cite: 733-736]"],
+  ["174.2", "汚れを落とそうと<span class='grammar-highlight'>するあまり</span>、強い力で磨いてしまいがちです (21-7)", "ようとする", "想要...", "刷牙时因为太想把污垢刷掉，往往容易用力过猛。 [cite: 737]"],
+  ["174.3", "単に問題点を指摘し<span class='grammar-highlight'>ようとした</span>にすぎない。", "ようとする", "想要...", "我日前提交的意见书只是想指出问题点而已。 [cite: 738-739]"],
+  ["174.4", "車から出ようと<span class='grammar-highlight'>したとたんに</span>、大粒の雨が降ってきた。(19-12)", "ようとする", "正要...", "正要从车里出来时，大雨就落了下来。 [cite: 740]"],
+  ["174.5", "不正に现金を引き出そうと<span class='grammar-highlight'>したとして</span>、男が逮捕された。(12-7)", "ようとする", "试图...", "一名男子因试图非法取现被逮捕。 [cite: 741]"],
+  ["175", "娘はぼくの話を<span class='grammar-highlight'>聞こうとしない</span>んだ (15-7)", "ようとはしない", "完全不想...", "女儿完全不想听我说话。 [cite: 742-743]"],
+  ["176.1", "一日も早く回復<span class='grammar-highlight'>されますように</span>。(16-7)", "vます/ませんように", "祝愿... / 希望...", "感冒好点了吗？祝愿您能早日康复。 [cite: 744-745]"],
+  ["176.2", "今日こそ何も<span class='grammar-highlight'>起きませんように</span> (14-7)", "vます/ませんように", "祝愿... / 希望...", "说得对。希望最后这一天可千万别再出什么乱子了。 [cite: 746-747]"],
+  ["177.1", "竹山鉄道が、今年の3月31日<span class='grammar-highlight'>をもって</span>廃止された。(13-7)", "名词をもって", "到...为止 / 截至... (时间节点)", "竹山铁路于今年3月31日起废除。 [cite: 748-749]"],
+  ["177.2", "体育館は本年3月15日<span class='grammar-highlight'>をもって</span>閉館しました。(22-12)", "名词をもって", "到...为止", "由于设施老化，体育馆已于今年3月15日闭馆。感谢您长年来的使用。 [cite: 750-751]"],
+  ["178", "そもそも<span class='grammar-highlight'>何をもって</span>幸せとするのだろうか。(15-7)", "名をもって", "用 / 以... (方式手段)", "大家都说想变幸福，可到底以什么来定义幸福呢？ [cite: 752-754]"],
+  ["179", "私が持つノウハウを<span class='grammar-highlight'>もってすれば</span>、早期の黒字化が図れる。(20-12)", "名をもってすれば", "如果用...的话 (必定能...)", "山下先生在就任典礼上表示：“如果利用我掌握的技术，确信能早日实现扭亏为盈。” [cite: 755-757]"],
+  ["180", "車内の混雑を<span class='grammar-highlight'>よそに</span>、平然とパソコンで作業に没头していた。(16-12)", "名をよそに", "无视... / 不顾...", "早高峰的满员电车里，那个学生模样的男青年无视车厢内的拥挤，旁若无人地打开电脑埋头干活。 [cite: 758-759]"],
+  ["181", "多くの企業が事業からの撤退を<span class='grammar-highlight'>余儀なくされている</span>。(19-12)", "名を余儀なくされる", "被迫... / 无奈只能...", "受经济不景气影响，许多企业被迫退出该项业务。 [cite: 760-761]"],
+  ["182.1", "古い冷蔵庫を、引っ越し<span class='grammar-highlight'>を機に</span>買い替えた。(23-12)", "名,动词のを機に", "以...为契机", "趁着搬家，把用了很久的旧冰箱换掉了。 [cite: 762-763]"],
+  ["182.2", "開業90周年を迎える<span class='grammar-highlight'>のを機に</span>最新型車両を導入した。(10-12)", "名,动词のを機に", "以...为契机", "山川铁路以开业90周年为契机，引入了最新型号的车辆。 [cite: 764]"],
+  ["183", "東京で開催される<span class='grammar-highlight'>のを皮切りに</span>、全国を巡回していく予定だ。(21-7)", "名,动词のを皮切りに", "以...为开端 (接连展开)", "新游戏机的发售活动计划本周末在东京举办，之后将在全国巡回。 [cite: 765-767]"],
+  ["184.1", "産卵を<span class='grammar-highlight'>控えた</span>雌に限っての行動なのだ。(24-7)", "名を控える", "面临 / 临近", "说到蚊子总有吸血的印象，但其实吸血的只有雌蚊，而且只限于临近产卵的雌蚊。 [cite: 768-770]"],
+  ["184.2", "半年後に大学受験を<span class='grammar-highlight'>控えて</span>、現在活動を休止している。(19-12)", "名を控える", "面临 / 临近", "半年后就要面临大学入学考试，偶像西田明目前正暂停活动。 [cite: 771]"],
+  ["185.1", "健康意識の高まりを<span class='grammar-highlight'>受けて</span>、健康食品は急成長している。(24-12)", "名词を受けて", "受到...的影响 / 响应...", "受近年来健康意识提高的影响，健康食品产业正飞速成长。 [cite: 772-773]"],
+  ["185.2", "景気の回復倾向を<span class='grammar-highlight'>受けて</span>、給与の支給額が増えると見込まれている。(14-12)", "名词を受けて", "受到...", "受经济复苏趋势的影响，预计以大企业为中心，工资发放额将会增加。 [cite: 774-775]"],
+  ["185.3", "燃料価格の高腾を<span class='grammar-highlight'>受けて</span>、複数の航空会社が运赁を值上げした。", "名词を受けて", "受到...", "受燃料价格飙升影响，多家航空公司提高了票价。 [cite: 776]"],
+  ["186", "店員の失礼な態度に大変<span class='grammar-highlight'>不快な思いをした</span>", "连体形+思いをする", "体验到某种感觉/心情", "日前去餐厅时，因店员失礼的态度而感到非常不快。 [cite: 777-779]"],
+  ["187", "責任の重さに身が<span class='grammar-highlight'>引き締まる思いです</span> (10-12)", "思いです", "感到...的心情", "被委任这个项目，感到责任重大，精神为之振奋。 [cite: 780-781]"],
+  ["188", "親が子供を注意するのは、子供の<span class='grammar-highlight'>ためを思って</span>のことだ。(12-12)", "人のためを思う", "为某人着想", "父母教训孩子，全是出于为孩子着想，但这份心情往往很难传达到。 [cite: 782-784]"],
+  ["189", "<span class='grammar-highlight'>探すったって</span>、こんな広い場所でどうやって探すの？(18-7)", "ったって", "即便说... / 说是...", "说是要找，在这么大的地方该怎么找啊？ [cite: 786-789]"],
+  ["190", "デザートが<span class='grammar-highlight'>ただっていう</span>だけじゃないか", "っていう", "也就是所谓...", "我看下。这不只是甜点免费而已嘛。 [cite: 790-793]"],
+  ["191", "さっきの話が<span class='grammar-highlight'>冗談だって</span>ことくらいわかるだろうに (10-12)", "だって", "是...", "稍微想想就能明白刚才的话是玩笑，他却轻而易举地相信了。 [cite: 794-796]"],
+  ["192", "自分から<span class='grammar-highlight'>言っといて</span>忘れるなんて信じられない。(21-12)", "言っておいて (言っといて)", "明明事先说了却...", "你自己主动说要买却给忘了，真是让人不敢相信。 [cite: 797-800]"],
+  ["193", "製品には<span class='grammar-highlight'>なんら</span>問題はないと強調した。(21-12)", "なんら～ない", "没有任何... / 丝毫没有...", "A公司就产品成分标注有误一事道歉，但强调产品本身没有任何问题。 [cite: 803-805]"],
+  ["194", "私はオリンピックには<span class='grammar-highlight'>まるで</span>興味がない。", "まるで... ない", "完全没... / 全然没...", "虽然社会上对奥运话题讨论热烈，但我对奥运会完全没兴趣。 [cite: 806-808]"],
+  ["195", "少し遅れたぐらいで<span class='grammar-highlight'>なにも</span>そんなに怒らなくてもいいだろう。(18-7)", "なにも... ない", "没必要特别...", "只不过稍微迟到了一点，没必要发那么大火吧。 [cite: 809-812]"],
+  ["196", "資料を社外に持ち出すことは、<span class='grammar-highlight'>いっさい</span>認められていない。(15-12)", "一切ない", "绝不... / 一切都不...", "在我的公司，无论出于什么理由，都绝对不允许将业务数据或资料带出公司。 [cite: 813-815]"],
+  ["197", "<span class='grammar-highlight'>久しく</span>映画を見ていない。(23-12)", "久しく... ていない", "很久没...了", "久得甚至想不起最后看的是哪部电影了。 [cite: 816-817]"],
+  ["198", "<span class='grammar-highlight'>とても</span>100年前に建てられたものとは<span class='grammar-highlight'>思えない</span>ほどのデザインだ。(22-12)", "とても... ない", "怎么也无法...", "头一次看到旧白木小学的校舍，其现代化的设计让人怎么也无法相信那是100年前建成的。 [cite: 818-820]"],
+  ["199", "<span class='grammar-highlight'>せめて</span>気分<span class='grammar-highlight'>だけでも</span>南極を感じてもらおう (13-7)", "せめて...だけでも", "哪怕只有...也好 / 至少...", "北川动物园给因为连日高温而打不起精神的企鹅们送去了大冰块，希望能让它们至少在心情上感受到南极的凉爽。 [cite: 822-824]"],
+  ["200", "富士山頂から見た景色は<span class='grammar-highlight'>なんと</span>美しかった<span class='grammar-highlight'>ことか</span> (18-7)", "なんと... ことか", "多么...啊！", "从富士山顶看到的景色多么壮美啊，真的被感动到了。 [cite: 825-826]"]
+];
+
+let currentPage = 0;
+const pageSize = 30; 
+
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  const start = currentPage * pageSize;
+  const end = Math.min(start + pageSize, DATA.length);
+  const items = DATA.slice(start, end);
+
+  document.getElementById('pageInfo').innerText = `${currentPage + 1} / ${Math.ceil(DATA.length/pageSize)}`;
+  document.getElementById('prevBtn').disabled = currentPage === 0;
+  document.getElementById('nextBtn').disabled = end >= DATA.length;
+
+  items.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    
+    const tdId = document.createElement('td');
+    tdId.className = 'id-cell';
+    tdId.textContent = item[0];
+    tr.appendChild(tdId);
+
+    const tdWord = document.createElement('td');
+    tdWord.className = 'word-cell';
+    tdWord.innerHTML = `
+      <div class="word-jp">${item[1]}</div>
+      <div class="example-zh">译文：${item[4]}</div>
+    `;
+    tr.appendChild(tdWord);
+
+    const tdAnswer = document.createElement('td');
+    tdAnswer.className = 'answer-cell';
+    tdAnswer.innerHTML = `
+      <button class="reveal-btn">显示答案</button>
+      <div class="answer-box">
+        <span class="usage-tag">接续/用法</span>
+        <div class="grammar-rule">${item[2]}</div>
+        <span class="usage-tag" style="background:#e8f5e9; color:#2e7d32;">含义</span><br>
+        <div class="grammar-mean">${item[3]}</div>
+      </div>
+    `;
+
+    const btn = tdAnswer.querySelector('.reveal-btn');
+    const box = tdAnswer.querySelector('.answer-box');
+    const zh = tdWord.querySelector('.example-zh');
+
+    btn.onclick = () => {
+      const isVis = box.classList.toggle('visible');
+      zh.classList.toggle('visible', isVis);
+      btn.textContent = isVis ? '隐藏' : '显示答案';
+    };
+
+    tr.appendChild(tdAnswer);
+    tbody.appendChild(tr);
+  });
+}
+
+function changePage(step) { currentPage += step; buildTable(); window.scrollTo(0,0); }
+
+document.getElementById('revealAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.add('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '隐藏');
+};
+
+document.getElementById('hideAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '显示答案');
+};
+
+buildTable();
+</script>
+</body>
+</html>

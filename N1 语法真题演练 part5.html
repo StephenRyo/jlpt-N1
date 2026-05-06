@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N1 语法真题汇总 - Part 5 (最终完结版)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f2; --bg2: #f0ede5; --surface: #fff; --ink: #1c1008;
+  --muted: #7a6a52; --border: rgba(28,16,8,.1); --gold: #b8860b;
+  --red: #c0392b; --green: #2e7d32; --blue: #1565c0; --star-bg: #fff9e1; 
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; }
+
+.topbar {
+  background: var(--ink); color: #f5f1eb; padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.topbar h1 { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; letter-spacing: .05em; }
+
+.subbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: .6rem 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.tool-btn { background: var(--ink); color: #f5f1eb; border: none; padding: .4rem 1rem; border-radius: 4px; font-size: .75rem; cursor: pointer; transition: 0.2s; }
+.tool-btn:hover { opacity: 0.8; }
+
+.table-wrap { overflow-x: auto; padding-bottom: 80px; }
+table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+thead th { background: #e8e4da; color: var(--muted); font-size: .7rem; padding: .7rem 1.5rem; text-align: left; border-bottom: 2px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: 0.15s; }
+tbody tr:hover { background: rgba(184,134,11,.03); }
+
+td { padding: 1rem 1.5rem; vertical-align: top; line-height: 1.6; }
+.id-cell { width: 70px; text-align: center; color: #999; font-size: 13px; font-weight: bold; border-right: 1px solid var(--border); }
+.word-cell { width: auto; white-space: nowrap; } 
+.answer-cell { width: 350px; border-left: 1px dashed var(--border); background: rgba(0,0,0,0.01); }
+
+.word-jp { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; font-weight: 500; display: inline-block; vertical-align: middle; }
+.grammar-highlight { color: var(--red); font-weight: 700; }
+
+.example-zh { 
+  display: none; 
+  font-size: 0.9rem; 
+  color: var(--muted); 
+  padding: 6px 12px; 
+  background: #eeeae0; 
+  border-radius: 4px; 
+  margin-top: 8px;
+  white-space: normal; 
+  width: fit-content;
+}
+.example-zh.visible { display: block; }
+
+.reveal-btn { background: #fff; border: 1.5px solid var(--border); color: var(--muted); padding: .3rem .8rem; border-radius: 4px; font-size: .7rem; cursor: pointer; margin-bottom: 10px; }
+.reveal-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.answer-box { display: none; }
+.answer-box.visible { display: block; }
+.usage-tag { font-size: .72rem; background: #e0ddd5; color: #555; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
+.grammar-rule { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.grammar-mean { font-size: .82rem; color: var(--green); font-weight: bold; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; display: inline-block; }
+
+.pagination { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--ink); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
+.btn-page { background: var(--gold); border: none; color: white; padding: 8px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-page:disabled { background: #555; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>N1 语法真题汇总 <span style="font-size: 0.8rem; opacity: 0.7;">Part 5 (201-253 最终完结版)</span></h1>
+</div>
+
+<div class="subbar">
+  <button class="tool-btn" id="revealAllBtn">全部显示</button>
+  <button class="tool-btn" style="background:#666" id="hideAllBtn">全部隐藏</button>
+  <div style="font-size: 0.75rem; color: var(--muted);">提示：包含了所有未编号的助词及副词考点。例句保持单行。</div>
+</div>
+
+<div class="table-wrap">
+  <table id="vocabTable">
+    <thead>
+      <tr>
+        <th style="width: 70px; text-align: center;">ID</th>
+        <th>日语真题例句 (例文)</th>
+        <th>解析与用法 (右侧)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  <button id="prevBtn" class="btn-page" onclick="changePage(-1)">PREV</button>
+  <span id="pageInfo" style="color:white; font-weight:bold;">1 / 3</span>
+  <button id="nextBtn" class="btn-page" onclick="changePage(1)">NEXT</button>
+</div>
+
+<script>
+const DATA = [
+  ["201.1", "近年、子どもの読書離れが指摘されているが、<span class='grammar-highlight'>はたして</span>本当に減っているの<span class='grammar-highlight'>だろうか</span>。(13-7)", "果たして～だろうか", "到底/果真是那样吗？ (怀疑/反问)", "近年来孩子远离书籍的现象备受关注，但阅读量真的在减少吗？ [cite: 1873-1875]"],
+  ["201.2", "次の試合は優勝候補同士の対決です。<span class='grammar-highlight'>果たして</span>どちらが勝つのでしょうか (16-7)", "果たして～だろうか", "到底/果真是...", "下一场比赛是两位夺冠热门之间的对决。到底哪一方会获胜呢？ [cite: 1876-1877]"],
+  ["202", "バイオリンは半年レッスンを受けても、<span class='grammar-highlight'>せいぜい</span>正しい持ち方ができるようになる<span class='grammar-highlight'>ぐらい</span>だそうだ。(21-12)", "せいぜい...ぐらい", "顶多也就这种程度", "学小提琴的话，练半年顶多也就是能掌握正确的持琴姿势。 [cite: 1878-1880]"],
+  ["203", "最近は運動不足だ。<span class='grammar-highlight'>何しろ</span>外出といったらスーパーに行く程度の<span class='grammar-highlight'>もので</span>、あとは家にいる。(14-7)", "何しろ+もので", "毕竟/因为...", "毕竟说到出门也就去趟超市这种程度，剩下时间都待在家里。 [cite: 1881-1883]"],
+  ["204", "今日は祝日だから、<span class='grammar-highlight'>どうりで</span>空いてる<span class='grammar-highlight'>はずだ</span> (10-7)", "どうりで...はずだ", "怪不得 (表领悟理由)", "今天是节假日啊，怪不得人这么少。 [cite: 1884-1885]"],
+  ["205", "図書館っていいね。<span class='grammar-highlight'>だって</span>、自分で買わなくてもたくさんの本が読めるん<span class='grammar-highlight'>だもん</span>。(23-7)", "だって...だもん", "因为...嘛 (表理由/撒娇)", "图书馆真好啊。因为不用自己买就能读到这么多书嘛。 [cite: 1886-1889]"],
+  ["206.1", "兄が面接から帰ってきた。表情が明るいところを見ると、<span class='grammar-highlight'>どうやら</span>うまくいった<span class='grammar-highlight'>ようだ</span>。(19-7)", "どうやら～ようだ", "总觉得好像/看来...", "看哥哥表情很轻松，想必面试进行得很顺利。 [cite: 1890-1892]"],
+  ["206.2", "うちの猫は、カメラを向けると逃げてしまう。<span class='grammar-highlight'>どうやら</span>レンズが怖い<span class='grammar-highlight'>ようだ</span>。(14-12)", "どうやら～ようだ", "总觉得好像...", "我家的猫一对着镜头就跑，看来它好像很害怕镜头。 [cite: 1893-1894]"],
+  ["207", "雑誌で紹介された<span class='grammar-highlight'>からといって、必ずしも</span>おいしいレストラン<span class='grammar-highlight'>というわけではない</span>", "からといって...わけではない", "虽说...但未必...", "虽说是杂志上介绍过的，但未必就是一家好吃的餐厅。 [cite: 1895-1898]"],
+  ["208", "チケットをもらったが、仕事で忙しく行けそうにないので、<span class='grammar-highlight'>どうしたものか</span>と悩んでいる。", "どうしたものか", "怎么办才好呢？", "收到了门票但工作太忙没法去，正发愁该怎么办。 [cite: 1901-1902]"],
+  ["209", "広い<span class='grammar-highlight'>なんてもんじゃないよ</span>、1日じゃ全部回れなかったよ (22-12)", "なんてもんじゃない", "岂止是.../简直太...", "那儿哪是能用“大”来形容的，简直太大了，一天根本逛不完。 [cite: 1903-1906]"],
+  ["210", "今度作り方教えて。<span class='grammar-highlight'>時間があるときでいいから</span> (15-12)", "～でいいから", "哪怕是...也可以 (请求)", "这道菜太好吃了，等你有空的时候教教我怎么做也可以。 [cite: 1907-1909]"],
+  ["211.1", "主人公と恋人が、親に無理やり<span class='grammar-highlight'>別れさせられそうになる</span>話しなんだ (12-7)", "使役被动 (させられる)", "被迫做某事", "讲的是主人公和恋人差点被父母强行拆散的故事。 [cite: 1911-1914]"],
+  ["211.2", "あれこれ質問に<span class='grammar-highlight'>答えさせられたあげく</span>、対応できないと言われた。(11-7)", "使役被动 (させられる)", "被硬拉着做...", "被拉着回答了一大堆问题后，最终却被告知无法处理。 [cite: 1915-1917]"],
+  ["212", "修理してもらえたので、これでもう暑さに<span class='grammar-highlight'>悩まされる</span>ことはない (24-7)", "受动态 (悩まされる)", "深受...的困扰", "空调修好了，再也不用受高温的困扰了。 [cite: 1918-1921]"],
+  ["213", "私の一言に感動した妻に、<span class='grammar-highlight'>泣かれてしまった</span>。(22-12)", "间接被动 (受害/困扰)", "受...影响 (束手无策)", "妻子被我的一番话感动得哭了起来，弄得我手足无措。 [cite: 1922-1924]"],
+  ["214", "あのころのことが昨日のことのように<span class='grammar-highlight'>思い出される</span>", "自发被动 (思い出される)", "自然而然想起", "学生时代常去的这家店，让往事自然而然浮现在脑海中。 [cite: 1925-1927]"],
+  ["215.1", "私、今日でこのサークルを<span class='grammar-highlight'>辞めさせてもらおう</span>かと思って (16-12)", "使役授受 (させてもらう)", "请允许我...", "我想请允许我从今天起退出这个社团。 [cite: 1929-1931]"],
+  ["215.2", "被害者の方のお話を<span class='grammar-highlight'>聞かせていただく中で</span>、力になりたいと思いました (18-7)", "使役授受 (させていただく)", "承蒙允许...", "在采访受害者的过程中，我产生了想要帮助他们的想法。 [cite: 1934-1935]"],
+  ["216", "営業の立場から<span class='grammar-highlight'>言わせてもらえば</span>、そこまでやるのは厳しいです。(12-12)", "私に言わせてもらえば", "让我说的话/在我看来", "要让我从销售的立场来说的话，做到那一步是非常艰难的。 [cite: 1936-1941]"],
+  ["217", "友達<span class='grammar-highlight'>に言わせると</span>、私はけっこう怒りっぽいらしい。(13-12)", "人に言わせると", "如果让...来说的话", "我虽然不觉得自己性急，但如果让朋友来说，我好像挺易怒的。 [cite: 1942-1944]"],
+  ["218.1", "夫は私に、本当に大切なものは何なのかを<span class='grammar-highlight'>気づかせてくれる</span>存在です。(16-12)", "使役授受 (させてくれる)", "对方让我意识到...", "丈夫总是能让我意识到真正重要的东西是什么。 [cite: 1945-1947]"],
+  ["218.2", "この曲は、私にまた新しい恋をしようと<span class='grammar-highlight'>思わせてくれた</span>曲です。(13-7)", "使役授受 (させてくれる)", "对方让我...", "这首歌让曾经意志消沉的我重新产生了想要恋爱的勇气。 [cite: 1948-1949]"],
+  ["219", "弾いてくれる方がいるなら、ぜひもらって<span class='grammar-highlight'>やってください</span>。(22-12)", "授受 (てやる)", "给... (地位高对低/亲近)", "我弟说有会弹的人请务必送给对方，请您收下这把吉他吧。 [cite: 1951-1957]"],
+  ["220.1", "面白さを感じて<span class='grammar-highlight'>もらおうと</span>、コンテストを始めた。(22-12)", "授受 (てもらう)", "让/请某人做...", "为了让孩子们感受到制作的乐趣，公司开始了这项竞赛。 [cite: 1958-1960]"],
+  ["220.2", "代わることもできないので、自分の力で頑張って<span class='grammar-highlight'>もらう</span>しかない。(16-7)", "授受 (てもらう)", "只能让他自己...", "我也帮不上忙，只能让他靠自己的力量去努力了。 [cite: 1961-1963]"],
+  ["221.1", "ご注文の品を<span class='grammar-highlight'>お届けにあがります</span> (2012-12)", "谦语 (あがる)", "前往/去 (行く)", "现在就为您送货过去。 [cite: 1964-1966]"],
+  ["221.2", "スタッフが<span class='grammar-highlight'>お迎えにあがります</span>ので、予定時間をお知らせください (20-12)", "谦语 (あがる)", "前往/接机", "工作人员会去接您，请告知预计到达时间。 [cite: 1967-1968]"],
+  ["222.1", "教育講演会には、沢山の方が<span class='grammar-highlight'>おいでくださいました</span> (23-7)", "敬语 (おいでくださる)", "光临/来 (来る)", "前几天的讲座，有非常多的人到场参加。 [cite: 1972-1974]"],
+  ["222.2", "先生に<span class='grammar-highlight'>おいでいただく</span>からには、名物料理を出したいと思います (20-12)", "敬语 (おいでいただく)", "请...光临 (来てもらう)", "既然请到了老师光临，我想准备特色菜招待。 [cite: 1975-1976]"],
+  ["222.3", "東山さんは昔のことを鮮明に覚えて<span class='grammar-highlight'>おいでになり</span>驚いた。(16-12)", "敬语 (おいでになる)", "处于/在 (いる)", "90岁的东山先生对往事记忆犹新，这记忆力真让人吃惊。 [cite: 1977-1978]"],
+  ["223.1", "相談窓口に<span class='grammar-highlight'>お越しになる</span>際は、事前にご連絡をお願いします (24-7)", "敬语 (お越しになる)", "光临/来 (来る)", "光临咨询窗口时请事先联系。 [cite: 1980-1981]"],
+  ["223.2", "ABC銀行の山下さんが<span class='grammar-highlight'>見えました</span>。応接室でお待ちです。(23-12)", "敬语 (見える)", "来 (来る)", "银行的山下先生已经到了，正在接待室等您。 [cite: 1982]"],
+  ["224", "掲げた政策を、私自らが先頭に立って実行して<span class='grammar-highlight'>まいります</span>。(14-7)", "谦语 (まいる)", "进行/去 (行く/来る)", "新市长表示将亲自挂帅执行竞选政策。 [cite: 1983-1985]"],
+  ["225.1", "あれでは何の説明<span class='grammar-highlight'>にもなっておらず</span>、わが社の信用が失われるだけだ。(19-7)", "谦语 (おる/おらず)", "处于某状态 (いる)", "那样的说明根本算不上解释，只会受损公司信用。 [cite: 1986-1989]"],
+  ["225.2", "来ることは参加者には<span class='grammar-highlight'>知らされておらず</span>、突然の登場に驚いていた。(14-7)", "谦语 (おる/おらず)", "处于某状态 (いる)", "参加者们并不知道他会来，对他突然登场感到惊讶。 [cite: 1990-1991]"],
+  ["226.1", "参加希望者は 1月15日までに、村田まで<span class='grammar-highlight'>お知らせ願います</span>。(17-12)", "敬语 (お..願う)", "拜托请... (郑重请求)", "有意参加者请在1月15日前告知村田。 [cite: 1992-1995]"],
+  ["226.2", "優勝おめでとうございます。今のお気持ちを<span class='grammar-highlight'>お聞かせ願えますか</span>。(11-12)", "敬语 (お..願う)", "拜托能否让我听听...", "恭喜夺冠，能谈谈您现在的心情吗？ [cite: 1996-1998]"],
+  ["227", "工事中ご不便をおかけしますが、どうか<span class='grammar-highlight'>ご理解いただきたく</span>お願い申し上げます。(10-7)", "谦语 (いただく)", "恳请理解/希望得到", "施工期间给您带来不便，恳请您的理解。 [cite: 2001-2003]"],
+  ["228", "店長から一言<span class='grammar-highlight'>おっしゃってくださいませんか</span> (13-12)", "敬语 (おっしゃる)", "请您...好吗？ (郑重)", "关于大田说话太多的事，能不能请店长去提醒她一下。 [cite: 2004-2008]"],
+  ["229", "多大なるご迷惑をおかけしましたことを深く<span class='grammar-highlight'>おわび申し上げます</span> (10-12)", "敬语 (申し上げます)", "深表歉意 (固定)", "给您造成了巨大的困扰，在此深表歉意。 [cite: 2009-2010]"],
+  ["230", "はい、この企画の説明は、課長が<span class='grammar-highlight'>ご説明なさいます</span>。(17-7)", "敬语 (なさる)", "尊长做某事 (する)", "是的，这个企划将由课长来进行说明。 [cite: 2012-2014]"],
+  ["231", "当ホテルにご宿泊いただいたお客様から<span class='grammar-highlight'>頂戴した</span>ご意見を掲載しております。", "谦语 (頂戴する)", "承蒙赐予/收到 (もらう)", "本页面刊登了从住客那里收到的意见和感想。 [cite: 2015-2018]"],
+  ["232.1", "お忙しい毎日をお過ごしのことと<span class='grammar-highlight'>存じますが</span>、お変わりありませんか。(19-12)", "谦语 (存ずる)", "知道/觉得 (知る/思う)", "想必您每天都很忙碌，近况如何？ [cite: 2019-2021]"],
+  ["232.2", "お忙しいとは<span class='grammar-highlight'>存じますが</span>、ご確認いただければ幸いです。(22-12)", "谦语 (存ずる)", "知道/觉得 (知る/思う)", "我知道您很忙，但如果您能确认资料我将不胜荣幸。 [cite: 2022-2024]"],
+  ["233", "田中さんのことをよく<span class='grammar-highlight'>存じ上げています</span> (15-12)", "谦语 (存じ上げる)", "认识/知道某人 (知る)", "我非常了解关于田中先生的事情。 [cite: 2026]"],
+  ["234", "私個人<span class='grammar-highlight'>といたしましては</span>その必要性を感じております。(23-12)", "谦语 (いたす)", "作为... (从我的立场)", "作为我个人来说，我确实感受到了其必要性。 [cite: 2027-2028]"],
+  ["235", "私はTシャツ<span class='grammar-highlight'>に</span>ジーンズといったカジュアルな格好が好きだ。(18-12)", "助词 に (累加)", "加上 / 以及", "我喜欢T恤配牛仔裤这种休闲装扮。 [cite: 2030-2032]"],
+  ["236", "努力して夢を叶えた弟のことを兄として<span class='grammar-highlight'>誇りに</span>思う。(23-7)", "助词 に (副词化)", "感到... / 觉得...", "作为哥哥，我为通过努力实现梦想的弟弟感到自豪。 [cite: 2033-2035]"],
+  ["237", "景気は回復していると言われるが、<span class='grammar-highlight'>私には</span>一時的な現象のように思われる。(13-12)", "助词 に (被动主体)", "在我看来 / 我觉得", "虽说景气在复苏，但在我看来这像是一时的现象。 [cite: 2036-2039]"],
+  ["238", "5年前に植えた校庭の桜が、今年初めて花を<span class='grammar-highlight'>咲かせた</span> (17-12)", "助词 を (使役主体)", "让...开了 (盼望已久)", "5年前种在校园里的樱花，今年终于开花了。 [cite: 2040-2043]"],
+  ["239", "絶対に、夢を夢で<span class='grammar-highlight'>終わらせない</span>。", "助词 を (使役否定)", "不让...结束", "我正在努力学习影视，绝对不会让梦想仅仅以梦想的形式结束。 [cite: 2044-2045]"],
+  ["240", "シェフは20代だが、著名な料理評論家<span class='grammar-highlight'>をも満足させる</span>腕の持ち主だ。(22-12)", "助词 を (使役对象)", "使/让... (满意等)", "那位厨师虽才20多岁，却拥有甚至能让著名评论家满意的身手。 [cite: 2046-2047]"],
+  ["241", "出張の帰りに空港で、家族へのおみやげ<span class='grammar-highlight'>にと</span>、紅茶クッキーを買った。(15-7)", "省略 (と思っている)", "作为... (心想/打算)", "出差回来在机场买了红茶饼干，心想作为送给家人的特产。 [cite: 2050-2054]"],
+  ["242", "この鍋は、いため物に、揚げ物<span class='grammar-highlight'>にと</span>何にでも使えて便利です。", "省略 (に使う)", "用于...及...", "这个锅无论是炒菜还是炸物，干什么都能使，很方便。 [cite: 2055-2058]"],
+  ["243", "大人の観賞にたえるようなアニメ映画<span class='grammar-highlight'>をと考えて</span>作った作品だと語った。(15-12)", "省略 (を作ろう)", "心想(要制作)...", "导演说这是为了制作一部经得起成年人观赏的动画而创作的。 [cite: 2059-2061]"],
+  ["244", "かつては少子化で存続は難しい<span class='grammar-highlight'>のでは</span>という危機感があった。(17-12)", "省略 (ないか)", "难道不是...吗", "曾经由于少子化，大家都有过一种难道学校无法存续下去了吗的危机感。 [cite: 2062-2064]"],
+  ["245", "これだけたくさんあれば、<span class='grammar-highlight'>当分</span>お米は買わなくて済みそうだね。(14-12)", "副词 (当分)", "暂时 / 一段时间", "有这么多的话，暂时看来不用买米也能过下去了。 [cite: 2067-2069]"],
+  ["246", "手続きも審査も終わり、あとは出発を<span class='grammar-highlight'>待つばかり</span>となった。(17-7)", "副词 (ばかり)", "只等... (动作准备就绪)", "手续和审查都完了，剩下的就只等出发了。 [cite: 2070-2072]"],
+  ["247", "森さんのことなど何とも思っていなかった。<span class='grammar-highlight'>それが</span>最近、意識するようになってしまった。(20-12)", "副词 (それが)", "但是 / 可是 (出乎意料)", "以前对森先生毫无感觉。可最近不知为何突然开始在意起他了。 [cite: 2073-2075]"],
+  ["248", "<span class='grammar-highlight'>もっとも</span>、それは去年企画チームのリーダーになって<span class='grammar-highlight'>始めて</span>気づいたことですが。(16-12)", "副词 (もっとも)", "不过 (对前项补充转折)", "橄榄球经历让我懂得了团队合作，不过那是去年当了组长才发现的。 [cite: 2076-2080]"],
+  ["249", "安くない値段で買ったことは<span class='grammar-highlight'>まず</span>間違いない。", "副词 (まず)", "大概 / 多半 (推测肯定)", "他买这幅画花了不少钱，这多半是错不了的。 [cite: 2081]"],
+  ["250", "彼女以上に優れている作曲家は<span class='grammar-highlight'>まず</span>いないだろう。(17-7)", "副词 (まず)", "基本(没有) / 大概", "在现代电影音乐界，比她更有才华的作曲家大概是不存在的。 [cite: 2082]"],
+  ["251", "はっきりとは覚えていないが、この町には<span class='grammar-highlight'>いつか</span>来たことがある。(22-12)", "副词 (いつか)", "曾经 / 以前不知何时", "虽然记不清了，但我以前不知什么时候来过这个小镇。 [cite: 2083-2084]"],
+  ["252", "一人で行っても<span class='grammar-highlight'>誰かしら</span>友達に会うので、誰かと行く必要もない。(2016-7)", "副词 (誰かしら)", "某些人 / 不知是谁", "即使一个人去祭典也会遇见某些朋友，所以没必要约人一起。 [cite: 2085-2087]"],
+  ["253", "譲れないという<span class='grammar-highlight'>何かしらの</span>こだわりを持つことは誰だってあると思う。(19-12)", "副词 (何かしら)", "某种 / 某些 (不明确)", "关于食物，我想任何人都会有某种坚持不让步的讲究。 [cite: 2088-2090]"]
+];
+
+let currentPage = 0;
+const pageSize = 25; // 每页25条，分三页展示完结内容
+
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  const start = currentPage * pageSize;
+  const end = Math.min(start + pageSize, DATA.length);
+  const items = DATA.slice(start, end);
+
+  document.getElementById('pageInfo').innerText = `${currentPage + 1} / ${Math.ceil(DATA.length/pageSize)}`;
+  document.getElementById('prevBtn').disabled = currentPage === 0;
+  document.getElementById('nextBtn').disabled = end >= DATA.length;
+
+  items.forEach((item) => {
+    const tr = document.createElement('tr');
+    
+    const tdId = document.createElement('td');
+    tdId.className = 'id-cell';
+    tdId.textContent = item[0];
+    tr.appendChild(tdId);
+
+    const tdWord = document.createElement('td');
+    tdWord.className = 'word-cell';
+    tdWord.innerHTML = `
+      <div class="word-jp">${item[1]}</div>
+      <div class="example-zh">译文：${item[4]}</div>
+    `;
+    tr.appendChild(tdWord);
+
+    const tdAnswer = document.createElement('td');
+    tdAnswer.className = 'answer-cell';
+    tdAnswer.innerHTML = `
+      <button class="reveal-btn">显示答案</button>
+      <div class="answer-box">
+        <span class="usage-tag">接续/用法</span>
+        <div class="grammar-rule">${item[2]}</div>
+        <span class="usage-tag" style="background:#e8f5e9; color:#2e7d32;">含义</span><br>
+        <div class="grammar-mean">${item[3]}</div>
+      </div>
+    `;
+
+    const btn = tdAnswer.querySelector('.reveal-btn');
+    const box = tdAnswer.querySelector('.answer-box');
+    const zh = tdWord.querySelector('.example-zh');
+
+    btn.onclick = () => {
+      const isVis = box.classList.toggle('visible');
+      zh.classList.toggle('visible', isVis);
+      btn.textContent = isVis ? '隐藏' : '显示答案';
+    };
+
+    tr.appendChild(tdAnswer);
+    tbody.appendChild(tr);
+  });
+}
+
+function changePage(step) { currentPage += step; buildTable(); window.scrollTo(0,0); }
+
+document.getElementById('revealAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.add('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '隐藏');
+};
+
+document.getElementById('hideAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '显示答案');
+};
+
+buildTable();
+</script>
+</body>
+</html>

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N1 语法真题汇总 - Part 1 (1-50) Optimized</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f9f7f2; --bg2: #f0ede5; --surface: #fff; --ink: #1c1008;
+  --muted: #7a6a52; --border: rgba(28,16,8,.1); --gold: #b8860b;
+  --red: #c0392b; --green: #2e7d32; --blue: #1565c0; --star-bg: #fff9e1; 
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; }
+
+.topbar {
+  background: var(--ink); color: #f5f1eb; padding: 1rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.topbar h1 { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; letter-spacing: .05em; }
+
+.subbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: .6rem 1.5rem; display: flex; gap: 1rem; align-items: center; }
+.tool-btn { background: var(--ink); color: #f5f1eb; border: none; padding: .4rem 1rem; border-radius: 4px; font-size: .75rem; cursor: pointer; transition: 0.2s; }
+.tool-btn:hover { opacity: 0.8; }
+
+.table-wrap { overflow-x: auto; padding-bottom: 80px; }
+table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+thead th { background: #e8e4da; color: var(--muted); font-size: .7rem; padding: .7rem 1.5rem; text-align: left; border-bottom: 2px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: 0.15s; }
+tbody tr:hover { background: rgba(184,134,11,.03); }
+
+td { padding: 1rem 1.5rem; vertical-align: top; line-height: 1.6; }
+.id-cell { width: 70px; text-align: center; color: #999; font-size: 13px; font-weight: bold; border-right: 1px solid var(--border); }
+.word-cell { width: auto; white-space: nowrap; } /* 保持一行 */
+.answer-cell { width: 320px; border-left: 1px dashed var(--border); background: rgba(0,0,0,0.01); }
+
+.word-jp { font-family: 'Shippori Mincho', serif; font-size: 1.2rem; font-weight: 500; display: inline-block; vertical-align: middle; }
+.grammar-highlight { color: var(--red); font-weight: 700; }
+
+.example-zh { 
+  display: none; 
+  font-size: 0.9rem; 
+  color: var(--muted); 
+  padding: 6px 12px; 
+  background: #eeeae0; 
+  border-radius: 4px; 
+  margin-top: 8px;
+  white-space: normal; /* 翻译允许换行 */
+  width: fit-content;
+}
+.example-zh.visible { display: block; }
+
+.reveal-btn { background: #fff; border: 1.5px solid var(--border); color: var(--muted); padding: .3rem .8rem; border-radius: 4px; font-size: .7rem; cursor: pointer; margin-bottom: 10px; }
+.reveal-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+.answer-box { display: none; }
+.answer-box.visible { display: block; }
+.usage-tag { font-size: .72rem; background: #e0ddd5; color: #555; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-bottom: 4px; font-weight: bold; }
+.grammar-rule { font-size: .82rem; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.grammar-mean { font-size: .82rem; color: var(--green); font-weight: bold; padding: 4px 8px; background: #e8f5e9; border-radius: 4px; display: inline-block; }
+
+.pagination { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--ink); padding: 12px; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
+.btn-page { background: var(--gold); border: none; color: white; padding: 8px 25px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.btn-page:disabled { background: #555; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>N1 语法真题演练 <span style="font-size: 0.8rem; opacity: 0.7;">Part 1 (1-50)</span></h1>
+</div>
+
+<div class="subbar">
+  <button class="tool-btn" id="revealAllBtn">全部显示</button>
+  <button class="tool-btn" style="background:#666" id="hideAllBtn">全部隐藏</button>
+  <div style="font-size: 0.75rem; color: var(--muted);">提示：例句保持单行。点击“显示答案”查看翻译及右侧解析。</div>
+</div>
+
+<div class="table-wrap">
+  <table id="vocabTable">
+    <thead>
+      <tr>
+        <th style="width: 70px; text-align: center;">ID</th>
+        <th>日语真题例句 (例文)</th>
+        <th>解析与用法 (右侧)</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  <button id="prevBtn" class="btn-page" onclick="changePage(-1)">PREV</button>
+  <span id="pageInfo" style="color:white; font-weight:bold;">1 / 3</span>
+  <button id="nextBtn" class="btn-page" onclick="changePage(1)">NEXT</button>
+</div>
+
+<script>
+/**
+ * 修正后的 1-50 条数据
+ * ID, 日文, 接续, 含义, 译文
+ */
+const DATA = [
+  ["1.1", "経営者は 会社は社員<span class='grammar-highlight'>あっての</span>ものであるということを忘れてはいけない (23-12)", "Bは Aあってのもの/ことだ", "有A才有B", "经营者绝不能忘记，公司是有了员工才存在的。"],
+  ["1.2", "今の私があるのも監督<span class='grammar-highlight'>あっての</span>ことです。(2010-12)", "Bは Aあってのもの/ことだ", "有A才有B", "现在的我之所以存在，也是多亏了教练。"],
+  ["2.1", "お客様に食事をお出しする<span class='grammar-highlight'>以上</span>、衛生面の管理には、何よりも注意しております。", "动词简体·名である+以上", "既然...就要... 【表決意】", "既然要给客人提供食物，那么在卫生方面的管理上比什么都要注意。"],
+  ["2.2", "物事を始めてしまった<span class='grammar-highlight'>以上</span> 途中でやめるわけにはいかない。(2017-12)", "动词简体·名である+以上", "既然...就要... 【表決意】", "既然事情已经开始了，中途就无法停止。"],
+  ["3", "まとめるのに時間がかかる<span class='grammar-highlight'>うえに</span>受講者からの評判も良くなかったことを踏まえ、今年度は選択式で行うことにした。(24-7)", "形,动,名连体形+ うえに", "不仅...而且", "考虑到不仅总结起来花时间，受课者的评价也不好，今年决定采用选择题形式。"],
+  ["4", "本サービスを利用される方は、利用規約をご覧になった<span class='grammar-highlight'>上で</span>、お申し込みください。(13-7)", "动たうえで", "在...的基础之上/之后", "利用本服务的人员，请在阅读完使用规约后再进行申请。"],
+  ["5", "この花火大会は、日本の夏を語る<span class='grammar-highlight'>うえで</span>欠かせないイベントとして有名だ。(20-12)", "动るうえで", "在...方面 / ～时、〜场合", "这场烟花大会作为谈论日本夏天时不可或缺的活动而闻名。"],
+  ["6", "子供が寝ている<span class='grammar-highlight'>うちに</span>、掃除する。", "连体形+うちに", "趁着", "趁着孩子睡觉的时候打扫卫生。"],
+  ["7.1", "映画を見ている<span class='grammar-highlight'>うちに</span>寝てしまった。", "动る、ている、ない+うちに", "在做某事期间，不知不觉...", "看电影的时候，不知不觉就睡着了。"],
+  ["7.2", "同僚の山下さんは、一緒に仕事をする<span class='grammar-highlight'>うちに</span>実はよくしゃべる人だということが分かってきた。(23-7)", "动る、ている、ない+うちに", "在做某事期间，不知不觉...", "同事山下先生，在共事的过程中，渐渐发现他其实是个很健谈的人。"],
+  ["8", "できない理由ばかりを探して、やってもいない<span class='grammar-highlight'>うちから</span>あきらめてしまう人に、成長はない。(20-12)", "やってもいないうちから", "还没做就开始...", "那些只会找做不到的理由、还没尝试就放弃的人，是不会有进步的。"],
+  ["9.1", "太郎は「行ってきます」と言ったか言わないか<span class='grammar-highlight'>のうちに</span>、家を出てしまった。", "[Vる/た] か+ [Vない] か+のうちに", "刚... 的时候 (结束不明确时)", "太郎刚说完“我走了”，人就已经踏出家门了。"],
+  ["9.2", "電車のドアが開くか開かないか<span class='grammar-highlight'>のうちに</span>、乗客が飛び出した。", "[Vる/た] か+ [Vない] か+のうちに", "刚... 的时候", "电车门刚一开启，乘客们就冲了出来。"],
+  ["10", "私が小学校に入るか入らないか<span class='grammar-highlight'>のころ</span>、父と川へ釣りに行った記憶がある。(14-12)", "[Vる/た] か+ [Vない] か+のころ", "刚... 的时候 / 那会儿", "在我刚要上小学那会儿，记忆中曾和父亲去河边钓鱼。"],
+  ["11.1", "応援してくれるファンが一人でもいる<span class='grammar-highlight'>限り</span>、歌い続けます。(17-7)", "连体形+限り(は)", "只要(是...的状态)...就...", "只要还有一个支持我的粉丝在，我就要继续唱下去。"],
+  ["11.2", "父は仕事が生きがいで、定年後も働ける<span class='grammar-highlight'>かぎりは</span>働きたいと言っている。(14-7)", "连体形+限り(は)", "只要(是...的状态)...就...", "父亲视工作为生存意义，说退休后只要还能干就想继续工作。"],
+  ["12", "今日<span class='grammar-highlight'>を限りに</span>ギャンブルはやめる (10-12)", "名+を限りに", "以...为限，最后一次做...", "以今天为限，我再也不赌博了。"],
+  ["13", "木村選手は、日本大会優勝<span class='grammar-highlight'>を最後に</span>、競技から離れて正式に引退を表明した。(14-7)", "名+を最後に", "把...作为最后一次/终点", "木村选手以获得全日赛冠军为终点，离开了赛场并正式宣布引退。"],
+  ["14", "私が知る<span class='grammar-highlight'>限りでは</span>、このアプローチで分析している論文はこれまでにない。(23-12)", "Vる、ている、た限りでは", "据...所知 / 在...范围内", "据我所知，目前还没有论文采用这种方法进行分析。"],
+  ["15", "台風の進路によっては、午後の便が すべて 欠航にならない<span class='grammar-highlight'>ともかぎらない</span>。(19-12)", "小句简体 + とは(も)限らない", "未必 / 不一定", "根据台风的路径，下午的航班未必不会全部停航。"],
+  ["16.1", "たくさん人が並んでいたので待たされるか<span class='grammar-highlight'>と思いきや</span>、意外にもすぐに案内された。(21-12)", "かと思ったら/かと思えば/かと思いきや", "本以为...却... (感到意外)", "因为排了很多人，本以为要等很久，没想到意外地马上就被带位了。"],
+  ["16.2", "うちの猫は、突然甘えてきたり、そうか<span class='grammar-highlight'>と思えば</span>呼んでも無視してどこかに行ってしまったりする。(18-7)", "かと思ったら/かと思えば", "以为...却... / 刚一...又...", "我家的猫，一会儿突然撒娇，一会儿又无视呼唤跑掉，真是捉摸不透。"],
+  ["16.3", "役作りに悩んでいるのか<span class='grammar-highlight'>と思いきや</span>そうでもないという (11-7)", "かと思いきや", "本以为...其实不然", "本以为他在为如何塑造角色而烦恼，据说其实并不是那样。"],
+  ["17.1", "初めから宇宙飛行士になるつもりだった<span class='grammar-highlight'>かっていうと</span>、そうじゃないんです！(11-7)", "かというと/かといえば+否定", "至于说是不是...其实不是的", "如果问我是否从一开始就想当宇航员，其实并不是那样的！"],
+  ["17.2", "子育てをするのが母親でなくてはならない<span class='grammar-highlight'>かというと</span>、必ずしもそうではない。(24-12)", "かというと/かといえば+否定", "至于说是不是...其实不是的", "至于说养育孩子是否必须由母亲承担，其实并不一定。"],
+  ["18", "商品ご使用後の返品対応は<span class='grammar-highlight'>いたしかねます</span>ので、ご了承ください。(12-7)", "vます形+かねます", "难以办到 / 委婉拒绝", "商品使用后无法受理退货，敬请见谅。"],
+  ["19.1", "このままでは、せっかくの伝統技術が失われ<span class='grammar-highlight'>かねない</span> (18-12)", "Vます+かねない", "恐怕会... (主观担忧)", "照这样下去，难得的传统技术恐怕会失传。"],
+  ["19.2", "就職先は慎重に選ばないと 「こんなはずではなかった」 ということに<span class='grammar-highlight'>なりかねない</span> (21-7)", "Vます+かねない", "恐怕会... (主观担忧)", "如果不慎重选择就业单位，恐怕会演变成“本不该如此”的后果。"],
+  ["20.1", "父親が有名な水泳選手<span class='grammar-highlight'>であるがゆえに</span>彼はプレッシャーに苦しんできた。(17-12)", "名词(の) (である) /简体+(が)ゆえに", "因...故 / 由于...", "正因为父亲是著名的游泳选手，他一直承受着巨大的压力。"],
+  ["20.2", "天才作曲家と呼ばれる山川氏だが、天才<span class='grammar-highlight'>であるがゆえの</span>苦悩もあったという。(16-7)", "名词(の) (である) /简体+(が)ゆえに", "因...故 / 由于...", "虽然被称为天才作曲家，但据说山川先生也有着只有天才才有的苦恼。"],
+  ["21.1", "責任感の強い彼の性格<span class='grammar-highlight'>からして</span>、最後までやり通すに違いない。(10-12)", "名词+からして", "单从...来看 (判断依据)", "单从他极强的责任感来看，就一定会坚持到底的。"],
+  ["21.2", "そもそもこの情報が、責任者である彼に伝わっていない<span class='grammar-highlight'>ことからして</span>おかしい (10-7)", "名词+からして", "单从...来看 (判断依据)", "单从这信息竟然没传达给身为负责人的他这点来看，就很奇怪。"],
+  ["22", "通勤に片道2時間かかる私みたいな人間<span class='grammar-highlight'>からすれば</span>、職場まで歩いて数分なんて人は本当にうらやましい。(13-7)", "名词+からすれば", "从...角度/立场来看", "从我这种单程通勤两小时的人来看，走几分钟就能到公司的人真是太羡慕了。"],
+  ["23", "あんなにきれいな海も地元の人<span class='grammar-highlight'>にしてみれば</span>、日常の風景なのだろう。(15-12)", "名词+にしてみれば", "从...立场/视角来看", "那样美丽的海洋，在当地人看来，大概也只是日常的风景吧。"],
+  ["24", "情報が正しい<span class='grammar-highlight'>か否か</span>だけでなく、いつのデータかを確認することも重要である。", "か否かに", "是否", "不仅要确认信息是否正确，确认数据产生的时间也很重要。"],
+  ["25", "企業の海外進出が成功するかどうかは、優秀な人材を確保できる<span class='grammar-highlight'>か否かにかかっている</span>。(22-12)", "名/かどうか/か否かに+にかかっている", "取决于... / 关键在于...", "企业进军海外能否成功，可以说取决于能否确保了解当地国情的优秀人才。"],
+  ["26.1", "間違い電話をかけてきて謝りもしないとは、失礼<span class='grammar-highlight'>極まりない</span>。(10-7)", "名词,二类形容词+極まりない", "极其... (多用于负面)", "打了错电话甚至都不道歉，真是失礼透顶。"],
+  ["26.2", "冬山に単独で登るのは、危険<span class='grammar-highlight'>極まりない</span>行為だ (13-12)", "名词,二类形容词+極まりない", "极其... (多用于负面)", "独自攀登冬山是极其危险的行为。"],
+  ["27.1", "明日は西日本を中心に風雨が強まる<span class='grammar-highlight'>見込みだ</span>。(24-7)", "词原・ない形、Nの+見込みだ", "预计...", "预计明天以西日本为中心，风雨将会增强。"],
+  ["27.2", "来月には1000万人を超える<span class='grammar-highlight'>見込みだ</span>という。(22-12)", "词原・ない形、Nの+見込みだ", "预计...", "据说游乐园在下个月满一周年之际，游客人数有望突破1000万。"],
+  ["28.1", "今日は食事をするのも時間が惜しい<span class='grammar-highlight'>くらい</span>忙しい一日だった。(2019-12)", "V普/A/N+くらい", "达到...的程度", "今天忙得甚至连吃饭的时间都觉得可惜。"],
+  ["28.2", "今まで時間をかけてたのが、ばかばかしく思える<span class='grammar-highlight'>くらい</span>簡単に計算できたよ (2011.7)", "V普/A/N+くらい", "达到...的程度", "计算变得非常简单，以至于觉得以前花那么多时间简直太傻了。"],
+  ["28.3", "话题の本だから読んでみようか<span class='grammar-highlight'>ぐらい</span>の気持ちでしかなかったが、一気に読んでしまった。(13-12)", "V普/A/N+くらい", "程度/心境", "本来只是抱着“因为是热门书就读读看吧”这种程度的想法，结果一口气读完了。"],
+  ["28.4", "さっきの話が冗談だってこと<span class='grammar-highlight'>くらいわかるだろうに</span>単純な彼は簡単に信じてしまった。(10-12)", "V普/A/N+くらい", "明明连这点程度都...", "稍微想想就能明白刚才的话是玩笑，他却轻而易举地相信了。"],
+  ["29.1", "積り<span class='grammar-highlight'>こそしなかったが</span>午前中 ずっと雪が降っていた。(24-12)", "(名)こそ(动筒,形筒)が", "虽然...但...", "昨天虽然雪没积起来，但一上午都在下雪。"],
+  ["29.2", "優勝<span class='grammar-highlight'>こそ逃したが</span>、自己ベストを更新する好成績を収めた。(19-7)", "(名)こそ(动筒,形筒)过", "虽然...但...", "虽然与冠军失之交臂，但石川选手更新了个人最好成绩。"],
+  ["30", "今で<span class='grammar-highlight'>こそ一流企業と言われるが</span>もともとは小さな町工場だった。(2011-7)", "今でこそ.......が", "虽现在...但以前...", "虽然现在被称为一流企业，但原本只是个小作坊。"],
+  ["31.1", "他人を眺める<span class='grammar-highlight'>がごとく</span>、自らを客観的に観察して行う精神活動である。(24-12)", "动筒+(が)ごとく / Nの ごとく", "如同...一样", "反省是如同观察他人一样，客观观察自己的精神活动。"],
+  ["31.2", "事実ではないにもかかわらず、あたかも事実<span class='grammar-highlight'>であるかのごとく</span>報道されたことは遺憾である (24-7)", "动筒+(が)ごとく / Nの ごとく", "如同...一样", "虽然并非事实，却被报道得如同事实一般，对此深表遗憾。"],
+  ["32", "こんな大役が 私<span class='grammar-highlight'>ごとき</span>新人に務まるのかと不安でいっぱいでした (18-7)", "名词+ごとき", "像...一样的 (谦辞/轻蔑)", "我当时非常不安，担心像我这样的新人是否能胜任这份重任。"],
+  ["33", "患者を待たせる<span class='grammar-highlight'>ことなく</span>診察できるように予約制を導入する。(19-7)", "动词る+ことなく", "不做前项做后项 (没有...)", "为了能让患者无需等待即可就诊，近期将引入预约制。"],
+  ["34", "地域住民の同意を得る<span class='grammar-highlight'>ことなしに</span>進めたとして市長を訴えた。(18-7)", "名词、vることなしに", "没有...就...", "市民起诉了市长，称其在未获得当地居民同意的情况下推进开发。"],
+  ["35", "体力が落ちてきた<span class='grammar-highlight'>ことは否めない</span>が、高い技術力に期待している。(17-7)", "ことは否めない", "不可否认 / 不能否定...", "虽然不可否认体力确实有所下降，但我依然期待他高超的技术。"],
+  ["36.1", "この辺は桜の木が多い<span class='grammar-highlight'>ことから</span>、桜町と呼ばれる。", "ことから", "因...而来 (由来/因果)", "因为这一带樱花树很多，所以被称为樱町。"],
+  ["36.2", "児童数が増加して対応しきれなくなった<span class='grammar-highlight'>ことから</span>、新しい校舎が建設された (22-12)", "ことから", "因...而来 (原因)", "由于学生人数增加导致原有教室不够用，今年兴建了新校舍。"],
+  ["37.1", "彼女の<span class='grammar-highlight'>ことだから</span>、きっと手伝うでしょう。", "ことだから", "正因为是(性格特点)", "正因为是她，一定愿意帮忙吧。"],
+  ["37.2", "留学している息子も帰ってくる<span class='grammar-highlight'>ことだから</span>、久しぶりに家族旅行に行こう (19-7)", "ことだから", "既然...就...", "既然留学的儿子也要回来了，不如全家去旅行吧。"],
+  ["38", "驚いた<span class='grammar-highlight'>ことに</span>、小学生が高校レベルの数学の問題をすらすらと解いてみせた。(24-12)", "た/い/な+ことに(は)", "令人...的是...", "令人吃惊的是，那个小学生竟然流畅地解出了高中水平的数学题。"],
+  ["39", "読む<span class='grammar-highlight'>ことは読んだが</span> あまり理解できたとは言えない。(19-12)", "Aことは Aが", "虽然...但... / ...倒是...", "读倒是读了，但很难说理解得有多透彻。"],
+  ["40", "まだ使え<span class='grammar-highlight'>はするが</span>、使う機会がなさそうなので処分しようと思う。(24-7)", "名词+はするが", "...倒是...，但是...", "虽然还能用，但看起来没机会用了，还是处理掉吧。"],
+  ["41.1", "ペンギンの赤ちゃんが生まれた<span class='grammar-highlight'>こともあって</span>、にぎわっている。(17-7)", "こともあって", "也因为有...的原因", "由于前几天企鹅宝宝出生了，比平时更加热闹。"],
+  ["41.2", "みんな年が近い<span class='grammar-highlight'>こともあって</span>同世代ならではの話で盛り上がっています。(10-7)", "こともあって", "也因为有...的原因", "也因为大家年龄相近，正聊着同代人独有的话题，气氛热烈。"],
+  ["41.3", "症状が似ている<span class='grammar-highlight'>こともあって</span>自分は花粉症だという自覚がないケースもある (22-12)", "こともあって", "也因为有...的原因", "由于症状和感冒很像，也有人没意识到自己得了花粉症。"],
+  ["42", "謝り<span class='grammar-highlight'>さえすれば</span>許す。", "动词ます さえすれば", "只要...就...", "只要道歉我就原谅你。"],
+  ["43", "水やりを忘れ<span class='grammar-highlight'>さえしなければ</span>ちゃんと育ちますよ。(10-12)", "动词ます+さえしなければ", "只要不...就...", "这种植物只要不忘记浇水，就能好好生长。"],
+  ["44.1", "経験を積んだ昆虫学者<span class='grammar-highlight'>でさえも</span>迷うほど判別が難しい場合もあるそうだ。(23-7)", "名词+でさえも", "就连...也", "据说有些昆虫即便对于经验丰富的专家来说也很难辨别。"],
+  ["44.2", "脳科学の研究が進んだ現代<span class='grammar-highlight'>においてさえ</span>、解明できていない部分は多い。(17-7)", "名词+でさえも", "甚至就连...也", "即便在脑科学研究先进的现代，大脑机制中仍有许多未解之谜。"],
+  ["45", "インターネットの価値は使う人の使い方<span class='grammar-highlight'>次第で</span>決まるものだと思う。(12-7)", "名+次第で", "全凭 / 取决于...", "我认为互联网的价值取决于使用者如何去利用它。"],
+  ["46", "復旧状況<span class='grammar-highlight'>次第では</span>、営業再开が遅れる可能性があります。(16-12)", "名+次第では", "根据...情况，可能...", "根据修复进展，恢复营业的时间可能会推迟，请见谅。"],
+  ["47", "林先生にぜひご講演をお願いしたく、ご連絡した<span class='grammar-highlight'>次第です</span> (21-7)", "动简+次第です", "(事情的)原委 / 所以...", "希望能请林老师进行演讲，这就是我此次联系您的原委。"],
+  ["48", "値段は高めだが手間がかかっている<span class='grammar-highlight'>分</span>、他店とは比べ物にならないおいしさだ。(13-12)", "~分(ぶん)", "与...相应 / 之所以...", "价格虽稍贵，但因为花了很多功夫，美味程度是其他店无法比拟的。"],
+  ["49", "次の相手とは前回一度<span class='grammar-highlight'>対戦している</span>。今回は絶対に勝ちたい。(20-12)", "~している", "表过去的经历", "和下个对手在上次大会中交过一次手。上次输了，这次一定要赢。"],
+  ["50", "昨年4月1日<span class='grammar-highlight'>現在</span>における人口は过去最低となった。(18-7)", "时间+現在", "截至...当时", "根据政府数据，截至去年4月1日，未满15岁的人口降至历史最低。"]
+];
+
+let currentPage = 0;
+const pageSize = 30; 
+
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  const start = currentPage * pageSize;
+  const end = Math.min(start + pageSize, DATA.length);
+  const items = DATA.slice(start, end);
+
+  document.getElementById('pageInfo').innerText = `${currentPage + 1} / ${Math.ceil(DATA.length/pageSize)}`;
+  document.getElementById('prevBtn').disabled = currentPage === 0;
+  document.getElementById('nextBtn').disabled = end >= DATA.length;
+
+  items.forEach((item, index) => {
+    const tr = document.createElement('tr');
+    
+    // ID列
+    const tdId = document.createElement('td');
+    tdId.className = 'id-cell';
+    tdId.textContent = item[0];
+    tr.appendChild(tdId);
+
+    // 句子列
+    const tdWord = document.createElement('td');
+    tdWord.className = 'word-cell';
+    tdWord.innerHTML = `
+      <div class="word-jp">${item[1]}</div>
+      <div class="example-zh">译文：${item[4]}</div>
+    `;
+    tr.appendChild(tdWord);
+
+    // 答案/解析列
+    const tdAnswer = document.createElement('td');
+    tdAnswer.className = 'answer-cell';
+    tdAnswer.innerHTML = `
+      <button class="reveal-btn">显示答案</button>
+      <div class="answer-box">
+        <span class="usage-tag">接续/用法</span>
+        <div class="grammar-rule">${item[2]}</div>
+        <span class="usage-tag" style="background:#e8f5e9; color:#2e7d32;">含义</span><br>
+        <div class="grammar-mean">${item[3]}</div>
+      </div>
+    `;
+
+    const btn = tdAnswer.querySelector('.reveal-btn');
+    const box = tdAnswer.querySelector('.answer-box');
+    const zh = tdWord.querySelector('.example-zh');
+
+    btn.onclick = () => {
+      const isVis = box.classList.toggle('visible');
+      zh.classList.toggle('visible', isVis);
+      btn.textContent = isVis ? '隐藏' : '显示答案';
+    };
+
+    tr.appendChild(tdAnswer);
+    tbody.appendChild(tr);
+  });
+}
+
+function changePage(step) { currentPage += step; buildTable(); window.scrollTo(0,0); }
+
+document.getElementById('revealAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.add('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '隐藏');
+};
+
+document.getElementById('hideAllBtn').onclick = () => {
+  document.querySelectorAll('.answer-box, .example-zh').forEach(el => el.classList.remove('visible'));
+  document.querySelectorAll('.reveal-btn').forEach(el => el.textContent = '显示答案');
+};
+
+buildTable();
+</script>
+</body>
+</html>

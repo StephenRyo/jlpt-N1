@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JLPT N1 単語ドリル</title>
+<title>JLPT N1 学習サイト</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -88,30 +88,33 @@ body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sa
 <body>
 
 <div class="topbar">
-  <h1>JLPT N1 単語ドリル</h1>
-  <span class="sub">2000語 完全収録</span>
+  <h1>JLPT N1 学習サイト</h1>
+  <span class="sub">単語 &amp; 文法</span>
 </div>
 
 <div class="hero">
   <div class="en">Japanese Language Proficiency Test</div>
-  <h2>N1 単語ドリル</h2>
-  <p>日本語能力試験 N1 レベル 重要語彙</p>
+  <h2>N1 学習サイト</h2>
+  <p>日本語能力試験 N1 レベル 単語・文法</p>
   <div class="stat">
-    <div class="stat-item"><div class="num">20</div><div class="label">パート</div></div>
+    <div class="stat-item"><div class="num">20</div><div class="label">単語パート</div></div>
     <div class="stat-item"><div class="num">2000</div><div class="label">単語</div></div>
-    <div class="stat-item"><div class="num">100</div><div class="label">語 / パート</div></div>
+    <div class="stat-item"><div class="num">5</div><div class="label">文法パート</div></div>
   </div>
 </div>
 
 <div class="grid-wrap">
-  <div class="grid-title">— 学習パートを選んでください —</div>
-  <div class="grid" id="grid"></div>
+  <div class="grid-title">— 単語ドリル —</div>
+  <div class="grid" id="vocab-grid"></div>
+
+  <div class="grid-title" style="margin-top:2rem;">— 文法真題演練 —</div>
+  <div class="grid" id="grammar-grid"></div>
 </div>
 
-<div class="footer">JLPT N1 単語ドリル &nbsp;·&nbsp; 全20パート &nbsp;·&nbsp; 2000語</div>
+<div class="footer">JLPT N1 学習サイト &nbsp;·&nbsp; 単語 2000語 &nbsp;·&nbsp; 文法 5パート</div>
 
 <script>
-const grid = document.getElementById('grid');
+const vocabGrid = document.getElementById('vocab-grid');
 for (let i = 1; i <= 20; i++) {
   const start = (i - 1) * 100 + 1;
   const end = i * 100;
@@ -120,12 +123,26 @@ for (let i = 1; i <= 20; i++) {
   a.className = 'card';
   a.href = `Part_${padded}_fixed.html`;
   a.innerHTML = `
-    <div class="part-num">Part ${padded}</div>
+    <div class="part-num">単語 Part ${padded}</div>
     <div class="part-title">第${i}部</div>
     <div class="part-range">${start} – ${end} 語</div>
     <div class="arrow">→ 学習する</div>
   `;
-  grid.appendChild(a);
+  vocabGrid.appendChild(a);
+}
+
+const grammarGrid = document.getElementById('grammar-grid');
+for (let i = 1; i <= 5; i++) {
+  const a = document.createElement('a');
+  a.className = 'card';
+  a.href = `N1語法真題演練_Part${i}.html`;
+  a.innerHTML = `
+    <div class="part-num">文法 Part ${String(i).padStart(2,'0')}</div>
+    <div class="part-title">真題演練</div>
+    <div class="part-range">第${i}回</div>
+    <div class="arrow">→ 演練する</div>
+  `;
+  grammarGrid.appendChild(a);
 }
 </script>
 </body>
