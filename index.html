@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N1 単語ドリル</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f1eb; --bg2: #edeae3; --surface: #fff; --ink: #1c1008;
+  --muted: #7a6a52; --border: rgba(28,16,8,.1); --gold: #b8860b;
+  --green: #2e7d32;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; min-height: 100vh; }
+
+.topbar {
+  background: var(--ink); color: #f5f1eb; padding: .9rem 1.5rem;
+  display: flex; align-items: center; gap: 1rem;
+  position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.topbar h1 { font-family: 'Shippori Mincho', serif; font-size: 1.1rem; letter-spacing: .05em; }
+.topbar .sub { font-size: .75rem; color: rgba(255,255,255,.5); margin-left: auto; }
+
+.hero {
+  background: var(--ink); color: #f5f1eb;
+  padding: 3rem 1.5rem 2.5rem;
+  text-align: center;
+  border-bottom: 3px solid var(--gold);
+}
+.hero .en { font-size: .7rem; letter-spacing: .25em; text-transform: uppercase; color: var(--gold); margin-bottom: .6rem; }
+.hero h2 { font-family: 'Shippori Mincho', serif; font-size: 2rem; font-weight: 700; letter-spacing: .08em; margin-bottom: .5rem; }
+.hero p { font-size: .8rem; color: rgba(255,255,255,.5); }
+.hero .stat { display: inline-flex; gap: 2rem; margin-top: 1.5rem; }
+.hero .stat-item { text-align: center; }
+.hero .stat-item .num { font-family: 'Shippori Mincho', serif; font-size: 1.8rem; color: var(--gold); font-weight: 700; }
+.hero .stat-item .label { font-size: .65rem; color: rgba(255,255,255,.45); letter-spacing: .1em; }
+
+.grid-wrap { padding: 2rem 1.5rem; max-width: 900px; margin: 0 auto; }
+.grid-title { font-size: .65rem; letter-spacing: .2em; color: var(--muted); text-transform: uppercase; margin-bottom: 1rem; padding-bottom: .5rem; border-bottom: 1px solid var(--border); }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: .75rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1rem 1rem .9rem;
+  text-decoration: none;
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  gap: .35rem;
+  transition: all .18s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform .2s ease;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.1); border-color: var(--gold); }
+.card:hover::before { transform: scaleX(1); }
+
+.card .part-num { font-size: .62rem; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; }
+.card .part-title { font-family: 'Shippori Mincho', serif; font-size: 1rem; font-weight: 700; }
+.card .part-range { font-size: .7rem; color: var(--muted); }
+.card .arrow { font-size: .7rem; color: var(--gold); margin-top: .3rem; opacity: 0; transition: opacity .15s; }
+.card:hover .arrow { opacity: 1; }
+
+.footer { text-align: center; padding: 2rem; font-size: .7rem; color: var(--muted); border-top: 1px solid var(--border); margin-top: 1rem; }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .hero h2 { font-size: 1.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>JLPT N1 単語ドリル</h1>
+  <span class="sub">2000語 完全収録</span>
+</div>
+
+<div class="hero">
+  <div class="en">Japanese Language Proficiency Test</div>
+  <h2>N1 単語ドリル</h2>
+  <p>日本語能力試験 N1 レベル 重要語彙</p>
+  <div class="stat">
+    <div class="stat-item"><div class="num">20</div><div class="label">パート</div></div>
+    <div class="stat-item"><div class="num">2000</div><div class="label">単語</div></div>
+    <div class="stat-item"><div class="num">100</div><div class="label">語 / パート</div></div>
+  </div>
+</div>
+
+<div class="grid-wrap">
+  <div class="grid-title">— 学習パートを選んでください —</div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="footer">JLPT N1 単語ドリル &nbsp;·&nbsp; 全20パート &nbsp;·&nbsp; 2000語</div>
+
+<script>
+const grid = document.getElementById('grid');
+for (let i = 1; i <= 20; i++) {
+  const start = (i - 1) * 100 + 1;
+  const end = i * 100;
+  const padded = String(i).padStart(2, '0');
+  const a = document.createElement('a');
+  a.className = 'card';
+  a.href = `Part_${padded}_fixed.html`;
+  a.innerHTML = `
+    <div class="part-num">Part ${padded}</div>
+    <div class="part-title">第${i}部</div>
+    <div class="part-range">${start} – ${end} 語</div>
+    <div class="arrow">→ 学習する</div>
+  `;
+  grid.appendChild(a);
+}
+</script>
+</body>
+</html>

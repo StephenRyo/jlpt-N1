@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JLPT N1 単語ドリル (Part 7: 581-680)</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f1eb; --bg2: #edeae3; --surface: #fff; --ink: #1c1008;
+  --muted: #7a6a52; --border: rgba(28,16,8,.1); --gold: #b8860b;
+  --red: #c0392b; --green: #2e7d32; --blue: #1565c0; --star-bg: #fff9e1; 
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Noto Sans JP', sans-serif; font-size: 14px; }
+
+/* ── TOP BAR ── */
+.topbar {
+  background: var(--ink); color: #f5f1eb; padding: .9rem 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+  position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,.3);
+}
+.topbar h1 { font-family: 'Shippori Mincho', serif; font-size: 1.1rem; letter-spacing: .05em; white-space: nowrap; }
+
+.mode-wrap { display: flex; gap: .3rem; margin-left: auto; }
+.mode-btn { border: 1.5px solid rgba(255,255,255,.25); background: transparent; color: rgba(255,255,255,.7); padding: .3rem .85rem; border-radius: 2rem; font-size: .75rem; cursor: pointer; transition: all .2s; }
+.mode-btn.active { background: #2e7d32; color: #fff; border-color: #2e7d32; }
+
+.mode-hint { background: #fffbf0; border-bottom: 1px solid #f0e090; padding: .45rem 1.5rem; font-size: .75rem; color: #6a5200; display: flex; align-items: center; gap: .5rem; }
+
+.subbar { background: var(--bg2); border-bottom: 1px solid var(--border); padding: .6rem 1.5rem; display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+.tool-btn { background: var(--ink); color: #f5f1eb; border: none; padding: .3rem .9rem; border-radius: 2rem; font-size: .75rem; cursor: pointer; transition: background .2s; }
+.tool-btn-outline { background: transparent; color: var(--muted); border: 1.5px solid var(--border); padding: .3rem .9rem; border-radius: 2rem; font-size: .75rem; cursor: pointer; transition: all .2s; }
+
+.search-box { border: 1.5px solid var(--border); background: var(--surface); padding: .28rem .75rem; border-radius: 2rem; font-size: .78rem; outline: none; width: 160px; margin-left: auto; }
+
+.table-wrap { overflow-x: auto; padding-bottom: 80px; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: var(--bg2); color: var(--muted); font-weight: 500; font-size: .68rem; letter-spacing: .1em; padding: .55rem 1rem; text-align: left; border-bottom: 1.5px solid var(--border); }
+tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+tbody tr.starred { background: var(--star-bg); border-left: 4px solid var(--gold); }
+td { padding: .5rem 1rem; vertical-align: middle; }
+
+.star-btn { font-size: 1.25rem; cursor: pointer; color: #ddd; text-align: center; transition: 0.2s; }
+.star-btn.active { color: var(--gold); transform: scale(1.15); }
+
+.word-jp { font-family: 'Shippori Mincho', serif; font-size: 1.35rem; font-weight: 700; color: var(--ink); letter-spacing: 0.05em; transition: opacity 0.2s; }
+.reading-big { font-size: 1rem; color: var(--blue); font-weight: 500; transition: opacity 0.2s; }
+
+/* 核心显示逻辑：默认隐藏读取 */
+[data-mode="word"] .reading-big { opacity: 0; pointer-events: none; }
+[data-mode="word"] .reading-big.revealed { opacity: 1; pointer-events: auto; }
+[data-mode="reading"] .word-jp { opacity: 0; pointer-events: none; }
+[data-mode="reading"] .word-jp.revealed { opacity: 1; pointer-events: auto; }
+
+.reveal-btn { background: transparent; border: 1.5px solid var(--border); color: var(--muted); padding: .25rem .7rem; border-radius: 2rem; font-size: .72rem; cursor: pointer; margin-left: 8px; }
+
+.row-audio-btn { background: transparent; border: 1.5px solid var(--gold); color: var(--gold); width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; transition: 0.2s; vertical-align: middle; }
+.row-audio-btn.playing { background: var(--gold); color: white; animation: pulse 0.7s infinite; }
+@keyframes pulse { 50% { transform: scale(1.1); } }
+
+.answer-box { display: none; margin-top: 8px; padding-left: 10px; border-left: 2px solid var(--gold); }
+.answer-box.visible { display: block; }
+.meaning-zh { font-size: .82rem; color: var(--red); font-weight: 700; margin-bottom: .25rem; }
+.example-jp { font-family: 'Shippori Mincho', serif; font-size: .9rem; color: #333; line-height: 1.5; margin-bottom: .18rem; cursor: text; }
+.example-zh { font-size: .72rem; color: var(--muted); margin-bottom: .4rem; }
+
+/* ── 标注工具栏 ── */
+#annotToolbar {
+  position: fixed; display: none; align-items: center; gap: 4px;
+  background: #1c1008; border-radius: 6px; padding: 4px 6px;
+  box-shadow: 0 3px 12px rgba(0,0,0,.35); z-index: 9999;
+}
+#annotToolbar button {
+  width: 28px; height: 26px; border: none; border-radius: 4px;
+  cursor: pointer; font-size: 13px; font-weight: 700; background: transparent;
+  color: #f5f1eb; transition: .15s;
+}
+.example-jp mark.hl-yellow { background: #ffe066; color: #1c1008; border-radius: 2px; padding: 0 1px; }
+.example-jp mark.hl-green  { background: #86efac; color: #1c1008; border-radius: 2px; padding: 0 1px; }
+.example-jp strong.annot-bold { font-weight: 900; color: #b8860b; }
+
+.pagination { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--ink); padding: 15px; display: flex; justify-content: center; align-items: center; gap: 20px; box-shadow: 0 -2px 10px rgba(0,0,0,0.3); }
+.btn-page { background: var(--gold); border: none; color: white; padding: 8px 25px; border-radius: 2px; cursor: pointer; font-weight: bold; }
+.btn-page:disabled { background: #555; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>N1 単語ドリル <span class="badge">Part 7 (581-680)</span></h1>
+  <div class="mode-wrap">
+    <button class="mode-btn active" data-mode="word">📖 漢字→答え</button>
+    <button class="mode-btn" data-mode="reading">🔤 読み→答え</button>
+  </div>
+</div>
+
+<div class="mode-hint" id="modeHint">
+  <strong>📖 漢字モード</strong>：单字看读音、意思、例句。「显示答案」确认。
+</div>
+
+<div class="subbar">
+  <button class="tool-btn" id="revealAllBtn">すべて表示</button>
+  <button class="tool-btn-outline" id="hideAllBtn">すべて隠す</button>
+  <button class="tool-btn-outline" onclick="exportStars()">备份 ★</button>
+  <button class="tool-btn-outline" onclick="importStars()">恢复 ★</button>
+  <input class="search-box" type="text" id="searchInput" placeholder="🔍 検索…">
+</div>
+
+<div class="table-wrap">
+  <table id="vocabTable">
+    <thead>
+      <tr>
+        <th style="width: 40px; text-align: center;">★</th>
+        <th style="width: 40px; text-align: center;">#</th>
+        <th id="col1Head">単語</th>
+        <th id="col2Head">読み</th>
+        <th>操作 / 意味 / 例文</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  <button id="prevBtn" class="btn-page" onclick="changePage(-1)">PREV</button>
+  <span id="pageInfo" style="color:white; font-weight:bold;">1 / 5</span>
+  <button id="nextBtn" class="btn-page" onclick="changePage(1)">NEXT</button>
+</div>
+
+<div id="annotToolbar">
+  <button onclick="applyAnnot('hl-yellow')" style="color:#ffe066;">▌</button>
+  <button onclick="applyAnnot('hl-green')" style="color:#86efac;">▌</button>
+  <button onclick="applyAnnot('bold')">B</button>
+  <button onclick="applyAnnot('clear')">✕</button>
+</div>
+
+<script>
+//[cite: 17]
+const VOCAB_DATA = [
+  ["聳える", "そびえる", "耸立", "ヒマラヤ山脈の険しい峰々が雲の上に高く聳えている。", "喜马拉雅山脉险峻的群峰高耸入云。"],
+  ["高尚", "こうしょう", "高尚、典雅", "彼女の趣味は古典音楽の鑑賞という、実に高尚なものだ。", "她的爱好是欣赏古典音乐，真是非常高尚。"],
+  ["相応", "そうおう", "相称、适应", "自分の実力に相応した目標を立てることが、成功への近道だ。", "制定与自己实力相称的目标是成功的捷径。"],
+  ["好き嫌い", "すききらい", "好恶、挑食", "食べ物の好き嫌いを言わずに、何でも食べるようにしなさい。", "不要挑食，要做到什么都吃。"],
+  ["決行", "けっけっこう", "断然实行", "多少の雨なら、予定通りマラソン大会を決行するつもりだ。", "即使下一点小雨，也打算按计划举行马拉松比赛。"],
+  ["居住", "きょじゅう", "居住", "このマンションには、多くの外国人が居住している。", "这栋公寓里居住着很多外国人。"],
+  ["だぶだぶ", "だぶだぶ", "肥大、松垮", "急に痩せたせいか、以前のズボンがだぶだぶになってしまった。", "可能是因为突然瘦了，以前的裤子变得松松垮垮的。"],
+  ["手順", "てじゅん", "步骤、程序", "作業を効率的に進めるために、まずは手順を確認しておこう。", "为了高效开展工作，先确认一下步骤吧。"],
+  ["果て", "はて", "边际、结局", "長い議論の果てに、ようやく新プロジェクトの予算が決まった。", "经过长期的讨论，新项目的预算终于定下来了。"],
+  ["比率", "ひりつ", "比率", "わが国では、全人口に占める高齢者の比率が年々高まっている。", "在我国，老年人占总人口的比率逐年提高。"],
+  ["徹する", "てっする", "贯穿、彻底", "彼は一生を恵まれない子供たちの救済に徹した偉大な人物だ。", "他是一位一生致力于救济不幸儿童的伟大人物。"],
+  ["束縛", "そくばく", "束缚、拘束", "若いうちは、誰にも束縛されずに自由な生活を送りたいものだ。", "年轻的时候，都想过一种不被任何人束缚的自由生活。"],
+  ["念頭", "ねんとう", "念头、心头", "常に最悪の事態を念頭に置いて、危機管理に努めるべきだ。", "应该始终考虑到最坏的情况，努力做好危机管理。"],
+  ["見つける", "みつける", "发现、找到", "自分の才能を存分に発揮できる職場を、ようやく見つけることができた。", "终于找到了一个能充分发挥自己才能的工作岗位。"],
+  ["同感", "どうかん", "同感、赞同", "今の教育制度には問題があるという彼の意見には、私も全く同感だ。", "对于他认为现行教育制度存在问题的意见，我也完全赞同。"],
+  ["意図", "いと", "意图、企图", "彼の発言には、ライバルを牽制しようとする意図が隠されている。", "他的发言中隐藏着想要牵制对手的意图。"],
+  ["一挙", "いっきょ", "一举", "今回の大型受注により、わが社の財政状況は一挙に改善された。", "凭借这次的大额订单，我公司的财务状况一举得到了改善。"],
+  ["尚更", "なおさら", "更加、何况", "大人の私でも難しいのだから、子供には尚更理解できないだろう。", "连身为大人的我都觉得难，孩子恐怕就更无法理解了吧。"],
+  ["濡れる", "ぬれる", "濡、湿", "突然の夕立に遭い、傘を持っていなかったので全身ずぶ濡れになった。", "遇到了突如其来的阵雨，因为没带伞全身都淋透了。"],
+  ["来る", "くる", "来、由于", "彼の不調は、連日の過労から来ているものだと思われる。", "我认为他的不适是由于连日的过度劳累造成的。"],
+  ["誠実", "せいじつ", "诚实", "何事にも誠実に取り組む彼の姿勢は、多くの人に信頼されている。", "他对任何事都诚实对待的态度受到了很多人的信赖。"],
+  ["顧みる", "かえりみる", "回顾、反省", "自分の行動を顧みることで、同じ過ちを繰り返さないようにする。", "通过反省自己的行为，避免重复同样的错误。"],
+  ["織る", "おる", "织", "この村では、昔から伝統的な技法で絹織物を織っている。", "这个村子自古以来就用传统技法编织丝绸。"],
+  ["オープン", "おーぷん", "开放、营业", "駅前に、世界最大の品揃えを誇る書店がオープンした。", "车站前开了一家号称世界品种最齐全的书店。"],
+  ["上昇", "じょうしょう", "上升", "景気の回復に伴い、企業の株価が緩やかに上昇している。", "随着经济复苏，企业的股价正在缓慢上升。"],
+  ["遡る", "さかのぼる", "追溯、逆流而上", "この伝統行事の起源は、江戸時代まで遡ることができる。", "这项传统活动的起源可以追溯到江户时代。"],
+  ["若干", "じゃっかん", "若干、些许", "この計画には、まだ若干の修正が必要な箇所が残っている。", "这项计划中还残留着一些需要修正的地方。"],
+  ["吟味", "ぎんみ", "斟酌、挑选", "料理の味を最大限に引き出すために、素材を厳しく吟味する。", "为了最大限度地激发料理的美味，要严格甄选食材。"],
+  ["団結", "だんけつ", "团结", "困難な状況を乗り越えるために、社員一丸となって団結する。", "为了渡过难关，全体员工团结一心。"],
+  ["受け継ぐ", "うけつぐ", "继承", "先祖から代々受け継いできたこの土地を、大切に守っていきたい。", "我想好好守护这块从祖先那里代代相传下来的土地。"],
+  ["不在", "ふざい", "不在、外出", "担当者が不在のため、後ほどこちらから折り返しご連絡します。", "因为负责人不在，稍后我会给您回电话。"],
+  ["司る", "つかさどる", "掌管、管理", "法務省は、国の法秩序を司る重要な役割を担っている。", "法务省肩负着掌管国家法律秩序的重要角色。"],
+  ["どうやら", "どうやら", "好歹、看来", "空が暗くなってきた。どうやら一雨来そうな気配だ。", "天色变暗了，看来是要下一场雨的迹象。"],
+  ["簡潔", "かんけつ", "简洁", "報告書は、重要なポイントを簡潔にまとめて提出してください。", "报告书请明扼要地总结要点后提交。"],
+  ["忠告", "ちゅうこく", "忠告", "友人の忠告を無視して進めた結果、大きな失敗を招いてしまった。", "无视朋友的忠告执意进行的结果，招致了巨大的失败。"],
+  ["導入", "どうにゅう", "引入、采用", "最新のセキュリティシステムを導入し、情報漏洩の防止に努める。", "引入最新的安全系统，努力防止信息泄露。"],
+  ["惜しむ", "おしむ", "吝惜、遗憾", "彼は努力を惜しまず、常に最高のパフォーマンスを追求している。", "他不遗余力，始终追求最佳的表现。"],
+  ["扱う", "あつかう", "对待、操作、处理", "この商品は壊れやすいので、丁寧に取り扱うように注意してください。", "由于此商品易碎，请注意轻拿轻放。"],
+  ["資金", "しきん", "资金", "新しい事業を始めるためには、多額の準備資金が必要だ。", "为了开始新事业，需要大量的准备资金。"],
+  ["何気ない", "なにげない", "无意、若无其事", "彼の何気ない一言が、私の悩みを解決するヒントになった。", "他不经意间的一句话，成了解决我烦恼的启示。"],
+  ["どうにか", "どうにか", "总算、设法", "期限が迫っていたが、寝ずに作業してどうにか間に合わせた。", "期限将近，我不眠不休地工作，总算赶上了。"],
+  ["煩わしい", "わずらわしい", "繁琐、麻烦", "都会の煩わしい人間関係から離れて、静かな田舎で暮らしたい。", "想远离都市繁杂的人际关系，在宁静的乡下生活。"],
+  ["歓声", "かんせい", "欢呼声", "劇的な逆転ゴールが決まった瞬間、スタジアムに歓声が響き渡った。", "戏剧性逆转进球的瞬间，体育场内响起了雷鸣般的欢呼声。"],
+  ["兎角", "とかく", "动辄、总之", "初心者は、兎角基本を疎かにして新しい技術に飛びつきがちだ。", "初学者动辄容易忽视基本功而去追求新技术。"],
+  ["着目", "ちゃくもく", "着眼、注视", "彼は植物の未知の成分に着目し、画期的な新薬を開発した。", "他着眼于植物未知的成分，开发出了划时代的新药。"],
+  ["追放", "ついほう", "放逐、驱逐", "不法滞在が発覚した外国人は、国外へ追放されることもある。", "被发现非法滞留的外国人，有时会被驱逐出境。"],
+  ["ベスト", "べすと", "最棒、背心", "全力を尽くして、明日の試合ではベストを尽くしたい。", "我想竭尽全力，在明天的比赛中做到最好。"],
+  ["綱", "つな", "绳索、纲领", "命綱をしっかり締めて、断崖絶壁の登山に挑戦する。", "扎紧救生索，挑战断崖绝壁的登山。"],
+  ["気性", "きしょう", "性情、脾气", "彼は激しい気性の持ち主だが、根は非常に優しい人だ。", "他性情激烈，但本性是非常温柔的人。"],
+  ["僧", "そう", "僧侣", "その古い寺には、厳しい修行に励む多くの僧たちが暮らしている。", "在那座古寺里，居住着许多努力进行严酷修行的僧侣。"],
+  ["借金", "しゃっきん", "借款、债务", "ギャンブルで多額の借金を抱え、生活が破綻してしまった。", "因赌博背负巨额债务，生活陷入了破产。"],
+  ["出演", "しゅつえん", "出演、演戏", "彼女は、今度の映画で主役として出演することが決まった。", "已经决定由她出演下次电影的主角。"],
+  ["対応", "たいおう", "对应、应付", "顧客からのクレームに対して、誠实かつ迅速に対応する。", "对于客户的投诉，要诚实且迅速地予以对应。"],
+  ["風物", "ふうぶつ", "风物、风景", "雪景色はこの地方の冬の風物詩として、観光客に親しまれている。", "雪景作为该地区冬季的风物诗，深受游客喜爱。"],
+  ["暴れる", "あばれる", "乱闹、胡作非为", "酒に酔って暴れるのは、周りの迷惑になるので絶対にやめてほしい。", "喝酒闹事会给周围人添麻烦，请绝对不要这样做。"],
+  ["決断", "けつだん", "决断", "リーダーには、時には非情とも思えるような厳しい決断が求められる。", "领导者有时被要求做出看似冷酷的严峻决断。"],
+  ["奨励", "しょうれい", "奖励、鼓励", "政府は、若手研究者の海外派遣を積極的に奨励している。", "政府正积极鼓励年轻研究人员赴海外交流。"],
+  ["共感", "きょうかん", "共鸣、同感", "彼女の書く小説は、同世代の女性から強い共感を得ている。", "她写的小说在同龄女性中引起了强烈的共鸣。"],
+  ["軋む", "きしむ", "嘎吱作响", "この古い家の床は、歩くたびにギシギシと不気味な音を立てて軋む。", "这栋老房子的地板每走一步都会发出嘎吱嘎吱的诡异响声。"],
+  ["密か", "ひそか", "秘密、暗暗地", "彼は密かに会社を辞めて、海外で起業する計画を立てている。", "他正秘密计划辞职去海外创业。"],
+  ["コーラ", "こーら", "可乐", "暑い夏の日は、キンキンに冷えたコーラを飲むのが一番の楽しみだ。", "在炎炎夏日，喝冰镇可乐是最大的乐趣。"],
+  ["値引き", "ねびき", "降价、减价", "閉店間際のスーパーでは、多くの商品が大幅に値引きされている。", "超市临近关门时，许多商品都会大幅降价。"],
+  ["笑顔", "えがお", "笑容", "彼女の明るい笑顔は、周囲の人々を幸せな気持ちにさせる。", "她灿烂的笑容让周围的人都感到幸福。"],
+  ["促進", "そくしん", "促进", "政府は、地域経済の活性化を促進するための新法案を可決した。", "政府通过了旨在促进地区经济活力的法案。"],
+  ["返還", "へんかん", "归还、返还", "終戦から長年を経て、ようやく占領地が元の国に返還された。", "战后经过多年，被占领地终于归还给了原来的国家。"],
+  ["前衛", "ぜんえい", "前卫、先锋", "その芸術家の作品は非常に前衛的で、一般の人には理解が難しい。", "那位艺术家的作品非常前卫，一般人很难理解。"],
+  ["境遇", "きょうぐう", "境遇、处境", "不遇な境遇にあっても、彼は決して希望を捨てることはなかった。", "即使身处不幸的境遇，他也从未放弃过希望。"],
+  ["凹む", "へこむ", "凹陷、沮丧", "事故で車のドアが大きく凹んでしまい、修理代が高くつきそうだ。", "因为事故车门严重凹陷，修理费恐怕不便宜。"],
+  ["敢えて", "あえて", "敢于、硬是", "周囲の反対を押し切り、彼は敢えて困難な道を選んだ。", "他不顾周围人的反对，硬是选择了一条艰难的道路。"],
+  ["指摘", "してき", "指出、指正", "上司から仕事のミスを厳しく指摘され、反省の毎日だ。", "被上司严厉指出工作失误，每天都在反省。"],
+  ["ガレージ", "가れーじ", "车库", "休日は、自宅のガレージで趣味のバイクをいじるのが楽しみだ。", "休息日在家里的车库捣鼓爱车摩托是我的乐趣。"],
+  ["規範", "きはん", "规范、准则", "社会生活を送る上では、基本的な倫理規範を守ることが不可欠だ。", "在过社会生活时，遵守基本伦理规范不可或缺。"],
+  ["肉親", "にくしん", "骨肉、亲人", "遠く離れて暮らしていても、肉親の絆は決して切れることはない。", "即使居住遥远，骨肉亲情也绝不会断绝。"],
+  ["断つ", "たつ", "断绝、切断", "健康を維持するために、お酒とタバコを完全に断つことにした。", "为了维持健康，决定完全戒酒戒烟。"],
+  ["禁物", "きんもつ", "禁忌", "病み上がりの体には無理は禁物だ。ゆっくり休養しなさい。", "病愈后的身体切忌劳累，请好好休养。"],
+  ["素早い", "すばやい", "敏捷、快速", "ゴール前での彼の素早い動きに、相手ディフェンダーは翻弄された。", "他在门前敏捷的动作让对方防守队员束手无策。"],
+  ["関与", "かんよ", "参与、干预", "その政治家は、一連の汚職事件に深く関与していたことが判明した。", "查明那位政治家深度参与了一连串的贪污案件。"],
+  ["殊に", "ことに", "特别、尤其是", "最近の若者は礼儀正しい。殊に、彼らの挨拶は非常に気持ちが良い。", "最近的年轻人很有礼貌，尤其是他们的问候让人感觉非常舒畅。"],
+  ["雷", "かみなり", "雷、责骂", "突然の雷に驚いて、飼い犬が机の下に隠れてしまった。", "被突如其来的雷声惊吓，爱犬躲到了桌子下面。"],
+  ["説得", "せっとく", "说服", "頑固な父親を説得して、ようやく海外留学の許しを得ることができた。", "说服了固执的父亲，终于得到了出国留学的许可。"],
+  ["嗜好", "しこう", "嗜好", "食べ物や衣服の嗜好は人それぞれであり、他人が口出しすべきではない。", "饮食和衣服的嗜好因人而异，他人不应指手画脚。"],
+  ["舐める", "なめる", "舔、轻视", "相手が格下だからといって舐めてかかると、思わぬ痛い目に遭う。", "不能因为对方级别低就轻视，否则会吃苦头的。"],
+  ["老ける", "ふける", "老、衰老", "苦労が絶えなかったせいか、彼はここ数年で急に老けたように見える。", "或许是因为操劳不断，他这几年看起来老得很快。"],
+  ["拡散", "かくさん", "扩散、传播", "SNSで拡散された情報は、瞬く間に世界中に広まってしまう。", "在SNS上传播的信息瞬息之间就会传遍全世界。"],
+  ["振り", "ふり", "样子、假装", "彼女は気づかない振りをしていたが、実は全てを知っていたのだ。", "她虽然装作没察觉，其实知道所有的事情。"],
+  ["エチケット", "えちけっと", "礼节、礼貌", "公共の場では、携帯電話のマナーを守るのが最低限のエチケットだ。", "在公共场合遵守手机礼仪是起码的礼节。"],
+  ["閉鎖", "へいさ", "关闭、封闭", "赤字が続いたため、その遊園地は今月末で閉鎖されることになった。", "由于持续赤字，那家游乐园决定于本月底关闭。"],
+  ["横ばい", "よこばい", "平稳、停滞", "ここ数ヶ月、わが社の売上は増加も減少もせず横ばいの状態だ。", "这几个月，我公司的销售额既没增也没减，处于持平状态。"],
+  ["はらはら", "はらはら", "提心吊胆", "サーカスの綱渡りを見て、観客は皆はらはらしていた。", "看到马戏团的走钢丝，观众们都捏了一把冷汗。"],
+  ["孤独", "こどく", "孤独", "大都会の中で一人で暮らしていると、ふとした瞬間に孤独を感じる。", "在大都市里独自生活，不经意间会感到孤独。"],
+  ["救う", "すくう", "救助、挽救", "彼の適切な応急処置が、瀕死の状態にあった患者の命を救った。", "他中肯的应急处理挽救了处于濒死状态的患者的生命。"],
+  ["肝", "きも", "肝脏、胆量、关键", "このプロジェクトの肝となるのは、いかに低コストで高品質を実現するかだ。", "这个项目的关键在于如何以低成本实现高品质。"],
+  ["所在", "しょざい", "所在、行踪", "事件の鍵を握る重要参考人の所在が、いまだに分かっていない。", "掌握案件关键的重要参考人的行踪至今仍不明确。"],
+  ["察する", "さっする", "察觉、推测", "彼女の暗い表情を見て、何かが起きたのだとすぐに察した。", "看到她阴沉的神情，我马上察觉出发生了什么事。"],
+  ["长引く", "ながびく", "拖延、延长", "交渉が予想以上に長引いてしまい、最終的な合意には至らなかった。", "谈判拖延得超出了预期，最终未能达成共识。"],
+  ["目盛り", "めもり", "刻度", "実験を正確に行うために、シリンダーの目盛りを慎重に読み取る。", "为了准确进行实验，要慎重读取量筒的刻度。"],
+  ["臆病", "おくびょう", "胆小", "彼は臆病な性格で、新しいことに挑戦するのをいつも躊躇している。", "他性格胆小，对挑战新事物总是犹豫不决。"],
+  ["必死", "ひっし", "拼命", "彼は合格するために、寝る間も惜しんで必死に勉強している。", "他为了考上，正废寝忘食地拼命学习。"],
+  ["エレガント", "えれがんと", "雅致、高贵", "彼女の着こなしているドレスは、非常にエレガントで気品に満ちている。", "她穿的那身礼服非常优雅，充满了贵气。"],
+  ["遣り遂げる", "やりとげる", "完成、做到底", "一度決めたことは、どんな困難があっても最後まで遣り遂げるつもりだ。", "一旦决定的事情，无论有什么困难都打算坚持做到底。"]
+];
+
+const ANNOT_KEY = 'n1_annot_p7_final';
+let _annotMap = JSON.parse(localStorage.getItem(ANNOT_KEY) || '{}');
+let _curAnnotTarget = null;
+
+function _saveAnnot() { localStorage.setItem(ANNOT_KEY, JSON.stringify(_annotMap)); }
+function _hideToolbar() { const tb = document.getElementById('annotToolbar'); if (tb) tb.style.display = 'none'; _curAnnotTarget = null; }
+
+function applyAnnot(type) {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed || !_curAnnotTarget) return;
+  const range = sel.getRangeAt(0);
+  if (!_curAnnotTarget.contains(range.commonAncestorContainer)) return;
+
+  if (type === 'clear') {
+    _curAnnotTarget.querySelectorAll('mark.hl-yellow, mark.hl-green, strong.annot-bold').forEach(m => {
+      const p = m.parentNode; while (m.firstChild) p.insertBefore(m.firstChild, m); p.removeChild(m);
+    });
+  } else if (type === 'bold') {
+    const el = document.createElement('strong'); el.className = 'annot-bold';
+    try { range.surroundContents(el); } catch(e) { el.appendChild(range.extractContents()); range.insertNode(el); }
+  } else {
+    const el = document.createElement('mark'); el.className = type === 'hl-yellow' ? 'hl-yellow' : 'hl-green';
+    try { range.surroundContents(el); } catch(e) { el.appendChild(range.extractContents()); range.insertNode(el); }
+  }
+  const tr = _curAnnotTarget.closest('tr');
+  const key = tr ? 'row_' + tr.dataset.idx : null;
+  if (key) { _annotMap[key] = _curAnnotTarget.innerHTML; _saveAnnot(); }
+  sel.removeAllRanges(); _hideToolbar();
+}
+
+// ── 修复：标注工具栏定位修正 (删除 window.scrollY) ──
+document.addEventListener('mouseup', e => {
+  const tb = document.getElementById('annotToolbar');
+  if (tb && tb.contains(e.target)) return;
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || !sel.toString().trim()) { _hideToolbar(); return; }
+
+  const anchor = sel.anchorNode;
+  const exEl = anchor && anchor.nodeType === 3 ? anchor.parentElement.closest('.example-jp') : anchor && anchor.closest && anchor.closest('.example-jp');
+  if (!exEl) { _hideToolbar(); return; }
+
+  _curAnnotTarget = exEl;
+  const rect = sel.getRangeAt(0).getBoundingClientRect();
+  tb.style.display = 'flex';
+  const left = Math.min(rect.left + rect.width/2 - 65, window.innerWidth - 138);
+  tb.style.left = Math.max(8, left) + 'px';
+  tb.style.top  = (rect.top - 45) + 'px'; 
+});
+
+document.addEventListener('mousedown', e => { const tb = document.getElementById('annotToolbar'); if (tb && !tb.contains(e.target)) _hideToolbar(); });
+
+let currentMode = 'word';
+let currentPage = 0;
+const pageSize = 20;
+let starredList = JSON.parse(localStorage.getItem('n1_stars_p7')) || [];
+let _curAudio = null, _curBtn = null, _jpVoice = null;
+
+function _initVoice() {
+  if (_jpVoice) return;
+  const all = window.speechSynthesis.getVoices();
+  const jp = all.filter(v => v.lang.startsWith('ja'));
+  _jpVoice = jp.find(v => /Kyoko|Otoya|Google 日本語|Haruka|Ichiro/i.test(v.name)) || jp[0] || null;
+}
+if (window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = _initVoice;
+_initVoice();
+
+function _stopAll() {
+  if (_curAudio) { try { _curAudio.pause(); } catch(e){} _curAudio = null; }
+  window.speechSynthesis.cancel();
+  if (_curBtn) { _curBtn.classList.remove('playing'); _curBtn = null; }
+}
+
+function _playTTS(text, btn) {
+  _initVoice(); btn.classList.add('playing'); _curBtn = btn;
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'ja-JP'; u.rate = 0.88;
+  if (_jpVoice) u.voice = _jpVoice;
+  u.onend = () => { btn.classList.remove('playing'); if(_curBtn===btn) _curBtn=null; };
+  window.speechSynthesis.speak(u);
+}
+
+function playAudio(text, btn, isSentence) {
+  if (btn === _curBtn) { _stopAll(); return; }
+  _stopAll();
+  if (isSentence || text.length > 12) { _playTTS(text, btn); return; }
+  btn.classList.add('playing'); _curBtn = btn;
+  const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&le=jap&type=2`;
+  const audio = new Audio(url); _curAudio = audio;
+  let done = false;
+  const fallback = () => { if (done) return; done = true; _curAudio = null; btn.classList.remove('playing'); _playTTS(text, btn); };
+  audio.onended = () => { done = true; btn.classList.remove('playing'); if (_curBtn === btn) _curBtn = null; };
+  audio.onerror = fallback;
+  setTimeout(() => { if (!done) fallback(); }, 3000);
+  audio.play().catch(fallback);
+}
+
+function buildTable() {
+  const tbody = document.getElementById('tableBody'); tbody.innerHTML = '';
+  const start = currentPage * pageSize; const end = Math.min(start + pageSize, VOCAB_DATA.length);
+  const items = VOCAB_DATA.slice(start, end);
+  document.getElementById('pageInfo').innerText = `${currentPage + 1} / ${Math.ceil(VOCAB_DATA.length/pageSize)}`;
+  document.getElementById('prevBtn').disabled = (currentPage === 0);
+  document.getElementById('nextBtn').disabled = (end >= VOCAB_DATA.length);
+
+  items.forEach((item, i) => {
+    const tr = document.createElement('tr'); tr.dataset.idx = start + i;
+    const isS = starredList.includes(item[0]); if(isS) tr.classList.add('starred');
+    const tdStar = document.createElement('td'); tdStar.style.textAlign = 'center';
+    tdStar.innerHTML = `<div class="star-btn ${isS ? 'active' : ''}" onclick="toggleStar('${item[0]}')">★</div>`;
+    tr.appendChild(tdStar);
+    const tdNum = document.createElement('td'); tdNum.style.textAlign = 'center';
+    tdNum.innerHTML = `<span style="color:#999;font-size:12px;">${start + i + 581}</span>`;
+    tr.appendChild(tdNum);
+    const tdWord = document.createElement('td'); tdWord.innerHTML = `<div class="word-jp">${item[0]}</div>`;
+    tr.appendChild(tdWord);
+    const tdReading = document.createElement('td'); tdReading.className = 'reading-cell';
+    tdReading.innerHTML = `<div class="reading-big">${item[1]}</div>`;
+    tr.appendChild(tdReading);
+    const tdAnswer = document.createElement('td');
+    const controlRow = document.createElement('div'); controlRow.style.display = "flex"; controlRow.style.gap = "8px"; controlRow.style.alignItems = "center";
+    const wordAudioBtn = document.createElement('button'); wordAudioBtn.className = 'row-audio-btn'; wordAudioBtn.innerHTML = '🔊';
+    // 修正：播放假名
+    wordAudioBtn.onclick = () => playAudio(item[1], wordAudioBtn); 
+    const revealBtn = document.createElement('button'); revealBtn.className = 'reveal-btn'; revealBtn.textContent = '显示答案';
+    controlRow.appendChild(wordAudioBtn); controlRow.appendChild(revealBtn);
+    const answerBox = document.createElement('div'); answerBox.className = 'answer-box';
+    answerBox.innerHTML = `<div class="meaning-zh">${item[2]}</div><div class="example-jp">${item[3]}</div><div class="example-zh">${item[4]}</div><div style="margin-top: 8px; display: flex; align-items: center; gap: 8px;"><button class="row-audio-btn" style="border-color:#1565c0; color:#1565c0;" id="sent_audio_${start+i}">🔊</button><span style="font-size:11px; color:#1565c0; font-weight:700;">例句发音</span></div>`;
+    const exJpEl = answerBox.querySelector('.example-jp');
+    if (exJpEl && _annotMap['row_'+(start+i)]) exJpEl.innerHTML = _annotMap['row_'+(start+i)];
+    answerBox.querySelector(`#sent_audio_${start+i}`).onclick = function() { playAudio(item[3], this, true); };
+    revealBtn.addEventListener('click', () => {
+      if (answerBox.classList.contains('visible')) {
+        answerBox.classList.remove('visible'); revealBtn.textContent = '显示答案';
+        tr.querySelector('.reading-big')?.classList.remove('revealed'); tr.querySelector('.word-jp')?.classList.remove('revealed');
+      } else {
+        answerBox.classList.add('visible'); revealBtn.textContent = '隐藏';
+        if (currentMode === 'word') tr.querySelector('.reading-big')?.classList.add('revealed'); else tr.querySelector('.word-jp')?.classList.add('revealed');
+      }
+    });
+    tdAnswer.appendChild(controlRow); tdAnswer.appendChild(answerBox); tr.appendChild(tdAnswer); tbody.appendChild(tr);
+  });
+  applyMode();
+}
+
+window.toggleStar = function(word) { const idx = starredList.indexOf(word); if(idx > -1) starredList.splice(idx, 1); else starredList.push(word); localStorage.setItem('n1_stars_p7', JSON.stringify(starredList)); buildTable(); };
+window.exportStars = function() { prompt("备份代码：", JSON.stringify(starredList)); };
+window.importStars = function() { const d = prompt("粘贴代码："); if(d) { try{starredList = JSON.parse(d); localStorage.setItem('n1_stars_p7', d); buildTable();}catch(e){alert("导入格式有误");} } };
+
+function applyMode() {
+  document.getElementById('vocabTable').dataset.mode = currentMode;
+  if (currentMode === 'word') document.getElementById('modeHint').innerHTML = '<strong>📖 漢字モード</strong>：单字看读音、意思、例句。「显示答案」确认。';
+  else document.getElementById('modeHint').innerHTML = '<strong>🔤 読みモード</strong>：读音看汉字、意思、例句。「显示答案」确认。';
+}
+function changePage(step) { currentPage += step; buildTable(); window.scrollTo(0,0); }
+document.querySelectorAll('.mode-btn').forEach(b => { b.addEventListener('click', () => { document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active')); b.classList.add('active'); currentMode = b.dataset.mode; applyMode(); }); });
+document.getElementById('searchInput').addEventListener('input', function() { const q = this.value.trim().toLowerCase(); document.querySelectorAll('#tableBody tr').forEach(tr => { tr.style.display = (!q || tr.innerText.toLowerCase().includes(q)) ? '' : 'none'; }); });
+document.getElementById('revealAllBtn').addEventListener('click', () => { document.querySelectorAll('#tableBody tr').forEach(tr => { if(tr.style.display !== 'none') { if (currentMode === 'word') tr.querySelector('.reading-big')?.classList.add('revealed'); else tr.querySelector('.word-jp')?.classList.add('revealed'); tr.querySelector('.answer-box')?.classList.add('visible'); tr.querySelector('.reveal-btn').textContent = '隐藏'; } }); });
+document.getElementById('hideAllBtn').addEventListener('click', () => { document.querySelectorAll('.word-jp.revealed, .reading-big.revealed').forEach(el => el.classList.remove('revealed')); document.querySelectorAll('.answer-box.visible').forEach(el => { el.classList.remove('visible'); el.previousElementSibling.lastElementChild.textContent = '显示答案'; }); });
+
+buildTable();
+</script>
+</body>
+</html>
